@@ -1,0 +1,39 @@
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: sudo apt-get update && sudo apt-get install -y fonts-liberation fonts-crosextra-carlito
+      - run: pip install -r requirements.txt pytest pyflakes coverage
+      - run: python -m pyflakes app.py interfaz mapacalor tests
+      - run: python -m coverage run --source=app,interfaz,mapacalor -m pytest tests
+      - run: python -m coverage report --fail-under=75
+
+  seguridad:
+    # análisis de seguridad: avisa pero no bloquea (una vulnerabilidad nueva en una librería ajena no es un error del código)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install bandit pip-audit
+      - run: python -m bandit -r app.py interfaz mapacalor -q
+      - run: pip-audit -r requirements.txt

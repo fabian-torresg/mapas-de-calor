@@ -1,0 +1,14 @@
+streamlit>=1.66,<2
+geopandas>=1.0,<2
+shapely>=2.0,<3
+pyogrio>=0.7,<1
+matplotlib>=3.8,<4
+pandas>=2.3,<4
+numpy>=1.26,<3
+openpyxl>=3.1,<4
+xlrd>=2.0,<3
+pyarrow>=14.0
+# versiones mínimas con vulnerabilidades corregidas (dependencias que traen Streamlit y Matplotlib)
+pillow>=13.0.0,<14
+tornado>=6.5.9,<7
+urllib3>=2.8.0,<3

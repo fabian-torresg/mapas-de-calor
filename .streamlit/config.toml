@@ -1,0 +1,38 @@
+[global]
+# los valores de las plantillas se escriben en session_state antes de crear los controles
+disableWidgetStateDuplicationWarning = true
+
+[theme.light]
+borderColor = "#D5DCE4"
+primaryColor = "#1F4E79"
+textColor = "#1E2A33"
+backgroundColor = "#F4F6F9"
+secondaryBackgroundColor = "#FFFFFF"
+
+[theme.light.sidebar]
+backgroundColor = "#13263A"
+secondaryBackgroundColor = "#1B3550"
+textColor = "#E7EEF5"
+primaryColor = "#6FA3D8"
+borderColor = "#355373"
+
+[theme.dark]
+borderColor = "#2C3A48"
+primaryColor = "#7FA7D1"
+backgroundColor = "#0F1620"
+secondaryBackgroundColor = "#1A2430"
+textColor = "#E6EBF0"
+
+[theme.dark.sidebar]
+backgroundColor = "#0B1622"
+secondaryBackgroundColor = "#13263A"
+textColor = "#E6EBF0"
+primaryColor = "#7FA7D1"
+borderColor = "#2C3A48"
+
+[server]
+headless = true
+maxUploadSize = 25
+
+[browser]
+gatherUsageStats = false
