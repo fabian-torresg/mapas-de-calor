@@ -70,7 +70,7 @@ Universidad EAN, con énfasis en análisis de datos, calidad y mejora continua.
 
 ### En línea
 
-Aplicación en Streamlit Community Cloud: *pendiente de despliegue*. El arranque en frío prepara las geometrías
+Aplicación en Streamlit Community Cloud: <https://mapas-calor.streamlit.app/>. El arranque en frío prepara las geometrías
 (del orden de 10 a 40 s); después cada cambio responde en 1 a 2 s. Los archivos cargados se procesan en memoria y
 no se almacenan; se recomienda no subir datos sensibles.
 
