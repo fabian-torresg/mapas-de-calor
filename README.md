@@ -28,6 +28,19 @@ los asocia con la geografía y exporta el mapa listo para informes y presentacio
   guardados se descargan en un ZIP.
 - **Idioma y tema:** español e inglés; modo claro y oscuro.
 
+## Ejemplos
+
+Mapas generados con la aplicación a partir de datos ficticios (`examples/datos_ejemplo.xlsx`).
+
+| | | |
+| --- | --- | --- |
+| ![Colombia por departamento](docs/img/departamentos.png) | ![Municipios de Cundinamarca y Boyacá](docs/img/municipios.png) | ![Localidades de Bogotá](docs/img/ciudad.png) |
+| Departamentos, con ranking | Municipios, con minimapa | Localidades de Bogotá |
+| ![Modo oscuro](docs/img/oscuro.png) | ![Regiones naturales en inglés](docs/img/regiones.png) | ![Comunas de Medellín](docs/img/medellin.png) |
+| Modo oscuro, vecinos y escala | Regiones, en inglés | Comunas de Medellín |
+| ![Antioquia por municipios](docs/img/antioquia.png) | | |
+| Antioquia, por cuantiles | | |
+
 ## Instalación
 
 Requiere Python 3.12 o superior.
