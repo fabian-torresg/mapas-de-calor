@@ -1,7 +1,7 @@
 """Geometrías de Colombia: municipios, departamentos y países vecinos.
 
 Municipios y departamentos: GADM 4.1 (uso no comercial, sin redistribución): se descarga la primera vez a
-datos/geometrias/. Vecinos: Natural Earth. Localidades y comunas: OpenStreetMap (© colaboradores, ODbL).
+data/geometries/. Vecinos: Natural Earth. Localidades y comunas: OpenStreetMap (© colaboradores, ODbL).
 """
 from __future__ import annotations
 
@@ -20,13 +20,13 @@ from pyogrio.errors import DataSourceError
 from shapely.geometry import MultiPolygon
 
 RAIZ = Path(__file__).resolve().parent.parent
-DIR_GEO = RAIZ / "datos" / "geometrias"
+DIR_GEO = RAIZ / "data" / "geometries"
 GADM_ZIP = DIR_GEO / "gadm41_COL_2.json.zip"
 GADM_URL = "https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_COL_2.json.zip"
 VECINOS_GEOJSON = DIR_GEO / "paises_vecinos.geojson"
 CIUDADES_GEOJSON = DIR_GEO / "ciudades_osm.geojson"   # localidades y comunas, de OpenStreetMap (ODbL)
 NUEVOS_GEOJSON = DIR_GEO / "municipios_nuevos_osm.geojson"   # municipios posteriores a GADM, de OpenStreetMap (ODbL)
-CATALOGO_CSV =RAIZ / "datos" / "catalogo" / "municipios.csv"
+CATALOGO_CSV =RAIZ / "data" / "catalog" / "municipios.csv"
 
 CRS = "EPSG:3116"  # MAGNA-SIRGAS / Colombia Bogotá: metros, sin deformar el país
 SIMPLIFICAR_M = 60  # tolerancia de simplificación (m)

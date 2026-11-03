@@ -22,20 +22,20 @@ import streamlit as st
 import mapacalor.render as _motor_dibujo
 from mapacalor import geodatos as gd
 from mapacalor import paletas as pal
-from interfaz.constantes import (
+from ui.constantes import (
     CALCULO_GEO, CALCULOS, COLA_MAX, DPI_VISTA, FORMATOS, FORMATOS_DATOS, FORMATOS_IMAGEN, RAYAS,
     RES_OPC, TITULO_GRUPO)
-from interfaz.controles import (
+from ui.controles import (
     boton_aa, cantidad, cuadros_de_color, fila_con_aa, fila_numeros, muestra, opcion_en_linea, panel_aa, panel_texto,
     selector_deptos, selector_paleta, tipo_de_linea)
-from interfaz.carga import mapa_carga, mapa_cierre
-from interfaz.descargas import dibujar_en, tabla_en_formato, zip_de_mapas
-from interfaz.estado import K, boton_restablecer, iniciar_estado, restablecer_todo, sumar
-from interfaz.estilos import CSS, SCRIPT
-from interfaz.guia import AYUDA_ES
-from interfaz.pestana_datos import area_del_archivo, pestana_datos
-from interfaz.plantillas import PLANTILLAS, aplicar_plantilla
-from interfaz.textos import rotulos_en_negrita, t
+from ui.carga import mapa_carga, mapa_cierre
+from ui.descargas import dibujar_en, tabla_en_formato, zip_de_mapas
+from ui.estado import K, boton_restablecer, iniciar_estado, restablecer_todo, sumar
+from ui.estilos import CSS, SCRIPT
+from ui.guia import AYUDA_ES
+from ui.pestana_datos import area_del_archivo, pestana_datos
+from ui.plantillas import PLANTILLAS, aplicar_plantilla
+from ui.textos import rotulos_en_negrita, t
 
 # Streamlit no relee mapacalor/: si cambió render.py, se recarga aquí
 _fecha_dibujo = os.path.getmtime(_motor_dibujo.__file__)
@@ -121,7 +121,7 @@ iniciar_estado()
 
 
 
-from interfaz.textos_en import AYUDA_EN  # noqa: E402
+from ui.textos_en import AYUDA_EN  # noqa: E402
 
 
 

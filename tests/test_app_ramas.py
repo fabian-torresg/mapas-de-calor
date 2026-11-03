@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from interfaz.descargas import dibujar_en, tabla_en_formato, zip_de_mapas
+from ui.descargas import dibujar_en, tabla_en_formato, zip_de_mapas
 from mapacalor import geodatos as gd
 import io
 import zipfile
@@ -280,8 +280,8 @@ def test_seleccion_de_galeria_desactualizada():
 
 def _guion_configuracion():
     import streamlit as st  # noqa: PLC0415
-    from interfaz.estado import iniciar_estado  # noqa: PLC0415
-    from interfaz.plantillas import poner_config  # noqa: PLC0415
+    from ui.estado import iniciar_estado  # noqa: PLC0415
+    from ui.plantillas import poner_config  # noqa: PLC0415
     iniciar_estado()
     poner_config({"seccion_inexistente": {"x": 1}, "que": {"nivel_txt": "Regiones"}}, [])
     st.session_state["listo"] = st.session_state["que__nivel_txt__0"]

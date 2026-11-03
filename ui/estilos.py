@@ -1,6 +1,6 @@
 """Estilos (CSS) y script de la página (JavaScript) de la interfaz."""
 
-from interfaz.carga import MASCARA
+from ui.carga import MASCARA
 
 CSS = r"""<style>
 .block-container{padding-top:0.6rem;padding-bottom:0.6rem;max-width:100%}
@@ -15,6 +15,8 @@ div[data-testid='stElementContainer']:has(#ancla-tema){display:none}
 /* cabecera de la tarjeta: iconos de panel y selectores de tema e idioma */
 .st-key-cab_tarjeta{padding-right:0;margin-bottom:-0.4rem}
 [data-testid='stAppDeployButton']{display:none}      /* Deploy solo sale al ejecutar en local */
+/* «Fork» de Community Cloud: tapaba el selector de idioma; el icono de GitHub se conserva */
+[data-testid='stToolbarActionButton']:has([data-testid='stToolbarActionButtonLabel']){display:none}
 /* la barra lateral deja solo el alto del botón de recoger */
 [data-testid='stSidebarHeader']{height:0.4rem;min-height:0;padding-top:0;padding-bottom:0}
 /* flecha de recoger la barra: junto a los iconos del título, solo al pasar el cursor */
@@ -25,9 +27,11 @@ div[data-testid='stElementContainer']:has(#ancla-tema){display:none}
 .st-key-btn_guia [role='img'],.st-key-rst_todo [role='img']{font-size:1.25rem!important}      /* guía y restablecer, del mismo tamaño */
 .st-key-cab_sb [data-testid='stMarkdownContainer']{margin-bottom:0!important}      /* sin el margen negativo de Streamlit: título centrado con los iconos */
 .st-key-cab_sb{container-type:inline-size;padding-right:2.2rem}     /* deja libre el botón de recoger */
-.st-key-cab_sb > [data-testid='stElementContainer']:nth-child(1){flex:1 1 0;min-width:0;white-space:nowrap}
+.st-key-cab_sb > [data-testid='stElementContainer']:nth-child(1){flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden}
 .st-key-cab_sb > [data-testid='stElementContainer']:nth-child(n+2){flex:0 0 auto;width:auto!important}
-@container (max-width: 21rem){ .st-key-cab_sb p.titulo-app{font-size:1.6rem} }
+/* el título se ajusta al espacio que dejan los iconos (el texto mide unas 6,5 veces su tamaño) y nunca los pisa */
+.st-key-cab_sb p.titulo-app{font-size:clamp(0.9rem,calc((100cqw - 5.6rem) / 6.5),2.15rem);
+  overflow:hidden;text-overflow:ellipsis}
 .st-key-selectores_cab [data-testid='stButtonGroup'] button{min-width:2.1rem;min-height:1.75rem;padding:0.1rem 0.5rem}
 .st-key-selectores_cab [data-testid='stButtonGroup'] button *{font-size:0.8rem!important;line-height:1}
 .st-key-selectores_cab [data-testid='stButtonGroup'],.st-key-selectores_cab [data-testid='stButtonGroup'] > div{flex-wrap:nowrap!important;white-space:nowrap}

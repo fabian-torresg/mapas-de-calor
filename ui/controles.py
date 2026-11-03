@@ -5,9 +5,9 @@ import html
 
 import streamlit as st
 
-from interfaz.constantes import AYUDA_ESPACIO, ICONO_ESTILO, PALETA_INFO, TIPOGRAFIAS, TIPOS_LINEA
-from interfaz.estado import K, fijar
-from interfaz.textos import t
+from ui.constantes import AYUDA_ESPACIO, ICONO_ESTILO, PALETA_INFO, TIPOGRAFIAS, TIPOS_LINEA
+from ui.estado import K, fijar
+from ui.textos import t
 from mapacalor import geodatos as gd
 from mapacalor import paletas as pal
 

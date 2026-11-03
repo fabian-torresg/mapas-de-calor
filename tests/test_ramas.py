@@ -14,8 +14,8 @@ from mapacalor import paletas as pal
 import matplotlib.pyplot as plt  # noqa: E402  (mapacalor fija el backend antes)
 from mapacalor.render import categorias, exportar_geojson  # noqa: E402
 import openpyxl
-from interfaz.carga import _avance, mapa_cierre
-from interfaz.textos import rotulos_en_negrita
+from ui.carga import _avance, mapa_cierre
+from ui.textos import rotulos_en_negrita
 
 
 # ---- datos
@@ -110,7 +110,7 @@ def test_paletas_auxiliares():
 # ---- estado de la sesión
 def _guion_estado():
     import streamlit as st  # noqa: PLC0415
-    from interfaz.estado import fijar, iniciar_estado, restablecer_todo, sumar, subir_version  # noqa: PLC0415
+    from ui.estado import fijar, iniciar_estado, restablecer_todo, sumar, subir_version  # noqa: PLC0415
     iniciar_estado()
     sumar("n")
     sumar("n")

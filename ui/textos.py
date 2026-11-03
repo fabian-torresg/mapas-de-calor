@@ -5,7 +5,7 @@ import re
 
 import streamlit as st
 
-from interfaz.textos_en import EN
+from ui.textos_en import EN
 
 
 _ITEM_DE_AYUDA = re.compile(r"(?<=[.;]) (?=[A-ZÁÉÍÓÚ«0-9][^.:]{0,45}: )")

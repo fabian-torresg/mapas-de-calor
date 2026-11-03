@@ -9,7 +9,7 @@ from shapely.geometry import Point, Polygon
 import mapacalor as mc
 from mapacalor import datos as dt
 from mapacalor import geodatos as gd
-from interfaz.constantes import TIPOGRAFIAS
+from ui.constantes import TIPOGRAFIAS
 from mapacalor import render
 
 import matplotlib.pyplot as plt  # noqa: E402
@@ -151,12 +151,12 @@ def test_tipografia_propia_y_muchos_grupos():
     assert dibuja(tabla, relleno="zona", colores_zona=colores)["unidades"] > 0
 
 
-def test_firma_en_la_esquina_inferior_derecha_segun_el_idioma():
-    for idioma, texto in (("es", "Por Ft."), ("en", "By Ft.")):
+def test_firma_en_la_esquina_inferior_derecha_igual_en_ambos_idiomas():
+    for idioma in ("es", "en"):
         fig, _ = mc.dibujar(None, mc.Estilo(dpi=60, idioma=idioma, fuente_nota="Fuente: prueba", resumen=False))
         fig.canvas.draw()
         render_ = fig.canvas.get_renderer()
-        firma = [t for t in fig.texts if t.get_text() == texto]
+        firma = [t for t in fig.texts if t.get_text() == "Ft."]
         assert len(firma) == 1
         caja = firma[0].get_window_extent(render_)
         ancho, alto = fig.canvas.get_width_height()
@@ -169,7 +169,7 @@ def test_firma_en_la_esquina_inferior_derecha_segun_el_idioma():
 def test_firma_tenue_sobre_fondo_claro_y_oscuro():
     for fondo in ("#FFFFFF", "#10161F"):
         fig, _ = mc.dibujar(None, mc.Estilo(dpi=40, color_fondo=fondo))
-        firma = next(t for t in fig.texts if t.get_text() == "Por Ft.")
+        firma = next(t for t in fig.texts if t.get_text() == "Ft.")
         r, g, b = (int(firma.get_color()[i:i + 2], 16) for i in (1, 3, 5))
         f = tuple(int(fondo[i:i + 2], 16) for i in (1, 3, 5))
         assert max(abs(r - f[0]), abs(g - f[1]), abs(b - f[2])) < 80      # casi del color del fondo

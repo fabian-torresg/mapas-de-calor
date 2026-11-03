@@ -4,8 +4,8 @@ from pathlib import Path
 import pandas as pd
 from streamlit.testing.v1 import AppTest
 
-from interfaz.constantes import FORMATOS_DATOS
-from interfaz.pestana_datos import _actualizar_estados, _aplicar_correcciones
+from ui.constantes import FORMATOS_DATOS
+from ui.pestana_datos import _actualizar_estados, _aplicar_correcciones
 from mapacalor import geodatos as gd
 
 APP = str(Path(__file__).resolve().parent.parent / "app.py")
@@ -136,7 +136,7 @@ def test_datos_en_formatos_y_botones_de_la_tabla():
 def _guion_correcciones():
     import pandas as pd  # noqa: PLC0415
     import streamlit as st  # noqa: PLC0415
-    from interfaz.pestana_datos import _actualizar_estados, _aplicar_correcciones  # noqa: PLC0415
+    from ui.pestana_datos import _actualizar_estados, _aplicar_correcciones  # noqa: PLC0415
     editado = pd.DataFrame({"Departamento": ["Antioqia", "Cauca"], "Valor": [1, 2], "Estado": ["", ""], "Corregir": [True, False]})
     trabajo = {"df": editado.copy(), "v": 0}
     if not st.session_state.get("hecho"):

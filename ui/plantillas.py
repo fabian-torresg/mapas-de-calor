@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import streamlit as st
 
-from interfaz.constantes import FUENTE_TEXTOS
-from interfaz.estado import SECCIONES, subir_version
+from ui.constantes import FUENTE_TEXTOS
+from ui.estado import SECCIONES, subir_version
 
 
 # Controles que cambiaron de sección; las plantillas usan el nombre anterior

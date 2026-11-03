@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from interfaz.textos import t
+from ui.textos import t
 
 
 # Cada sección versiona las claves de sus controles; al subir la versión se recrean

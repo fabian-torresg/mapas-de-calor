@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from interfaz.pestana_datos import (
+from ui.pestana_datos import (
     NADA, _ciudad_del_archivo, _columnas_detectadas, _columnas_que_faltan, _lugares_por_revisar, _tabla_base,
 )
 from mapacalor import datos as dt
@@ -58,7 +58,7 @@ def test_archivo_sin_columna_de_lugar_avisa():
 
 
 def test_excel_de_ejemplo_adopta_el_area():
-    contenido = (Path(__file__).resolve().parent.parent / "ejemplos" / "datos_ejemplo.xlsx").read_bytes()
+    contenido = (Path(__file__).resolve().parent.parent / "examples" / "datos_ejemplo.xlsx").read_bytes()
     at = subir(abrir_subida(), "datos_ejemplo.xlsx", contenido)
     assert not at.exception
     assert "lugares reconocidos" in textos(at)

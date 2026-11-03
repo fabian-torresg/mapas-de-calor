@@ -1,12 +1,6 @@
-# Datos con licencia que no permite redistribuir (la app los descarga la primera vez)
-datos/geometrias/gadm41_COL_2.json.zip
+# GADM no permite su redistribución: la aplicación lo descarga en la primera ejecución
+data/geometries/gadm41_COL_2.json.zip
 *.part
-
-# Descargas en bruto de OpenStreetMap (el resultado procesado va en datos/geometrias/)
-datos/_osm/
-
-# Guía personal del proyecto (no es pública)
-CONTEXTO.md
 
 # Entornos y cachés
 .venv/
@@ -14,6 +8,5 @@ venv/
 __pycache__/
 *.pyc
 .pytest_cache/
-.ruff_cache/
-.playwright-mcp/
+.coverage
 .DS_Store

@@ -8,10 +8,10 @@ from functools import partial
 import pandas as pd
 import streamlit as st
 
-from interfaz.constantes import ANCHO_COLUMNA, AYUDA_SEG
-from interfaz.descargas import tabla_en_formato
-from interfaz.estado import K
-from interfaz.textos import t
+from ui.constantes import ANCHO_COLUMNA, AYUDA_SEG
+from ui.descargas import tabla_en_formato
+from ui.estado import K
+from ui.textos import t
 from mapacalor import datos as dt
 from mapacalor import geodatos as gd
 

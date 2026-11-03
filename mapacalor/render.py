@@ -204,9 +204,9 @@ FUENTES = {"arial": ["Arial", "Liberation Sans", "DejaVu Sans"],
            "calibri": ["Calibri", "Carlito", "Liberation Sans", "DejaVu Sans"],
            "times": ["Times New Roman", "Liberation Serif", "DejaVu Serif"],
            "georgia": ["Georgia", "Gelasio", "Liberation Serif", "DejaVu Serif"]}
-FUENTES["firma"] = ["Great Vibes", "Georgia", "Liberation Serif", "DejaVu Serif"]    # manuscrita, incluida en datos/fuentes (SIL OFL)
+FUENTES["firma"] = ["Great Vibes", "Georgia", "Liberation Serif", "DejaVu Serif"]    # manuscrita, incluida en data/fonts (SIL OFL)
 FUENTES["sans"], FUENTES["serif"] = FUENTES["arial"], FUENTES["times"]  # nombres anteriores
-_FUENTE_FIRMA = Path(__file__).resolve().parent.parent / "datos" / "fuentes" / "GreatVibes-Regular.ttf"
+_FUENTE_FIRMA = Path(__file__).resolve().parent.parent / "data" / "fonts" / "GreatVibes-Regular.ttf"
 if _FUENTE_FIRMA.exists():
     font_manager.fontManager.addfont(str(_FUENTE_FIRMA))
 
@@ -1001,14 +1001,14 @@ def _cartografia(ax, esc: _Escena, mini, amp, huella_amp) -> tuple:
     return esq_escala, esq_norte
 
 
-_FIRMA = {"es": "Por Ft.", "en": "By Ft."}
+_FIRMA = "Ft."
 
 
 def _firma(fig, esc: _Escena, m: _Medidas):
     """Firma casi imperceptible en la esquina inferior derecha: manuscrita, pequeña y apenas distinta del fondo."""
     e = esc.e
     base = "#F1F5F9" if pal.es_oscuro(e.color_fondo) else "#26302E"
-    fig.text(1 - 0.09 / m.fig_w, 0.018 / m.fig_h, _FIRMA.get(e.idioma, _FIRMA["es"]), ha="right", va="bottom",
+    fig.text(1 - 0.16 / m.fig_w, 0.018 / m.fig_h, _FIRMA, ha="right", va="bottom",
              fontsize=9, color=_mezclar(base, e.color_fondo, 0.8), **_fuente([], "firma"))
 
 
