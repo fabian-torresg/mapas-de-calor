@@ -46,6 +46,7 @@ _motor_dibujo._fecha_cargado = _fecha_dibujo
 from mapacalor.render import Estilo, categorias, colores_texto, dibujar, exportar, exportar_geojson, lineas_resumen  # noqa: E402
 
 st.set_page_config(page_title="Mapas de calor", page_icon=":material/map:", layout="wide",
+                   initial_sidebar_state=420,      # ancho inicial en que caben todas las etiquetas; se puede redimensionar
                    menu_items={"About": "Mapas de calor, por Fabián Torres."})
 # Vista compacta: el mapa se ajusta al alto de la ventana, sin desplazar la página
 st.markdown(CSS, unsafe_allow_html=True)
