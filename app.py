@@ -1,4 +1,4 @@
-"""Generador de mapas de calor de Colombia (Streamlit). Autor: Fabián Torres.
+"""Generador de mapas de calor (Streamlit). Autor: Fabián Torres.
 
 Ejecutar: streamlit run app.py
 """
@@ -46,7 +46,7 @@ _motor_dibujo._fecha_cargado = _fecha_dibujo
 from mapacalor.render import Estilo, categorias, colores_texto, dibujar, exportar, exportar_geojson, lineas_resumen  # noqa: E402
 
 st.set_page_config(page_title="Mapas de calor", page_icon=":material/map:", layout="wide",
-                   menu_items={"About": "Mapas de calor de Colombia, por Fabián Torres."})
+                   menu_items={"About": "Mapas de calor, por Fabián Torres."})
 # Vista compacta: el mapa se ajusta al alto de la ventana, sin desplazar la página
 st.markdown(CSS, unsafe_allow_html=True)
 

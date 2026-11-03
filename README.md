@@ -1,4 +1,4 @@
-# Mapas de calor de Colombia
+# Mapas de calor
 
 Aplicación en Python y Streamlit que genera mapas de calor (coropletas) de Colombia por departamento, municipio,
 región natural y localidad o comuna de 22 ciudades. Recibe datos escritos en la aplicación o cargados desde Excel o CSV,
