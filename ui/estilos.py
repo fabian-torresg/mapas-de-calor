@@ -1,5 +1,7 @@
 """Estilos (CSS) y script de la página (JavaScript) de la interfaz."""
 
+import json
+
 from ui.carga import MASCARA
 
 CSS = r"""<style>
@@ -407,8 +409,8 @@ body[data-zona='tabla'] [data-testid='stSidebar'] [class*='st-key-btn_tabla'] bu
 </style>""".replace("__MASCARA__", MASCARA)
 
 # Script de la página: acordeón, pestañas, tema, tabla y paneles
-SCRIPT = r"""<script>
-const doc = window.parent.document;
+_CODIGO = r"""
+const W = window, doc = document;
 // Tema: aplica el selector de la tarjeta con el menú de Streamlit
 function esOscuro() {
   const app = doc.querySelector(".stApp");
@@ -591,8 +593,8 @@ if (!doc.__tooltips) {
     if (!icono || !marco || !barra || !icono.isConnected) return;
     const r = icono.getBoundingClientRect(), b = barra.getBoundingClientRect();
     const alto = contenido.offsetHeight, ancho = contenido.offsetWidth;
-    const x = Math.min(b.right + 10, window.parent.innerWidth - ancho - 8);
-    const y = Math.max(8, Math.min(r.top + r.height / 2 - alto / 2, window.parent.innerHeight - alto - 8));
+    const x = Math.min(b.right + 10, W.innerWidth - ancho - 8);
+    const y = Math.max(8, Math.min(r.top + r.height / 2 - alto / 2, W.innerHeight - alto - 8));
     marco.style.setProperty("transform", "translate(" + x + "px," + y + "px)", "important");
   };
   new MutationObserver((cambios) => {
@@ -611,11 +613,11 @@ if (!doc.__altoTabla) {
     if (!c || !c.offsetParent) return;
     const principal = doc.querySelector("[data-testid='stMain']");
     const arriba = c.getBoundingClientRect().top + (principal ? principal.scrollTop : 0);
-    const alto = Math.max(260, Math.round(window.parent.innerHeight - arriba - 28));
+    const alto = Math.max(260, Math.round(W.innerHeight - arriba - 28));
     if (doc.documentElement.style.getPropertyValue("--alto-tabla") !== alto + "px")
       doc.documentElement.style.setProperty("--alto-tabla", alto + "px");
   };
-  window.parent.addEventListener("resize", ajustarTabla);
+  W.addEventListener("resize", ajustarTabla);
   let pendiente = false;
   new MutationObserver(() => {
     if (pendiente) return;
@@ -738,4 +740,10 @@ if (!doc.__acordeon) {
     }, 350);
   }, true);
 }
-</script>"""
+"""
+
+# El código se instala en la propia página y no en el iframe: Streamlit recrea el iframe en algunas recargas y, al
+# desmontarlo, el navegador deja de ejecutar sus eventos, temporizadores y promesas. Se instala una sola vez.
+SCRIPT = ("<script>(function(){const doc=window.parent.document;if(doc.getElementById('script-pagina'))return;"
+          "const s=doc.createElement('script');s.id='script-pagina';s.textContent=" +
+          json.dumps("(function(){" + _CODIGO + "})();").replace("</", "<\\/") + ";doc.head.appendChild(s);})();</script>")
