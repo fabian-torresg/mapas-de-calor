@@ -22,7 +22,7 @@ jobs:
       - run: pip install -r requirements.txt pytest pyflakes coverage
       - run: python -m pyflakes app.py interfaz mapacalor tests
       - run: python -m coverage run --source=app,interfaz,mapacalor -m pytest tests
-      - run: python -m coverage report --fail-under=75
+      - run: python -m coverage report --fail-under=98
 
   seguridad:
     # análisis de seguridad: avisa pero no bloquea (una vulnerabilidad nueva en una librería ajena no es un error del código)

@@ -68,12 +68,10 @@ div[data-testid='stElementContainer']:has(#ancla-tema){display:none}
 [class*='st-key-miniatura_'] [data-testid='stElementToolbar']{display:none}
 [class*='st-key-miniatura_']{position:relative;border:2px solid rgba(128,128,128,0.25);border-radius:0.5rem;padding:0.35rem;cursor:pointer;gap:0.15rem;align-items:center}
 .st-key-mapa_grande [data-testid='stImage'] img{max-height:calc(100vh - 12.5rem)!important}     /* el mapa abierto cabe sin desplazar la página */
-[class*='st-key-miniatura_']:hover,[class*='st-key-miniatura_']:has(.mini-sel){border-color:var(--primario,#1F4E79)}
-[class*='st-key-miniatura_']:has(.mini-sel){background:rgba(31,78,121,0.08)}
+[class*='st-key-miniatura_']:hover{border-color:var(--primario,#1F4E79)}
 [class*='st-key-miniatura_'] [data-testid='stImage']{display:flex;justify-content:center}
 [class*='st-key-miniatura_'] [data-testid='stImage'] img{width:auto!important;max-width:100%;max-height:min(8rem,16vh)!important;object-fit:contain;margin:0 auto}
 [class*='st-key-miniatura_'] [data-testid='stCaptionContainer']{text-align:center;font-size:0.8rem}
-[class*='st-key-miniatura_'] .mini-sel{display:none}
 [class*='st-key-miniatura_'] > [data-testid='stElementContainer']:has(> [data-testid='stButton']){position:absolute;inset:0 0 2.5rem 0;width:auto!important;height:auto!important;opacity:0;z-index:2}
 [class*='st-key-miniatura_'] > [data-testid='stElementContainer'] [data-testid='stButton'],[class*='st-key-miniatura_'] > [data-testid='stElementContainer'] button{width:100%;height:100%;min-height:0}
 /* pie de cada miniatura: casilla con el nombre, descargar y eliminar */
@@ -542,9 +540,7 @@ if (!doc.__galeria) {
     const g = doc.querySelector(".st-key-galeria_cola");
     if (!g || !ev.target.closest("[data-testid='stMain']")) return;
     if (ev.target.closest("[class*='st-key-miniatura_'],.st-key-mapa_grande img,.st-key-mapa_grande button,.st-key-cab_galeria,.st-key-barra_galeria,.st-key-iconos_mapa,[data-testid='stPopoverBody'],[data-baseweb='popover'],.ampliado")) return;
-    const m = g.querySelector(".mini-sel");
-    const b = g.querySelector(".st-key-volver_min button") ||
-              (m && m.closest("[class*='st-key-miniatura_']").querySelector("[class*='st-key-elegir_'] button"));
+    const b = g.querySelector(".st-key-volver_min button");
     if (b) setTimeout(() => b.click(), 0);
   }, true);
 }

@@ -108,7 +108,6 @@ def asegurar_gadm(ruta: Path = GADM_ZIP, intentos: int = 3) -> Path:
             if intento == intentos - 1:
                 raise
             time.sleep(2 * (intento + 1))
-    return ruta
 
 
 def _leer_gadm() -> gpd.GeoDataFrame:
@@ -160,6 +159,8 @@ def _con_municipios_nuevos(g: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         toca = g.geometry.intersects(nueva)
         g.loc[toca, "geometry"] = g.loc[toca, "geometry"].map(lambda x: _sin_islotes(x.difference(nueva)))  # noqa: B023
         filas.append({"departamento": n.departamento, "municipio": n.municipio, "geometry": _sin_islotes(nueva)})
+    if not filas:
+        return g
     return pd.concat([g, gpd.GeoDataFrame(filas, crs=CRS)], ignore_index=True)
 
 

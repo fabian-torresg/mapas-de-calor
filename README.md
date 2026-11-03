@@ -165,7 +165,8 @@ mapacalor/
   paletas.py            Interpolación de colores y paletas de referencia
 datos/catalogo/         Nombres legibles de los municipios de GADM
 datos/geometrias/       Localidades y comunas (OSM), municipios creados después de GADM (OSM) y países vecinos
-tests/                  Pruebas con pytest: el motor (test_mapacalor.py) y la interfaz sin navegador (test_app.py)
+datos/fuentes/          Great Vibes, tipografía manuscrita de la firma «Por Ft.» (licencia SIL OFL 1.1, incluida)
+tests/                  Pruebas con pytest (146): el motor, el dibujo y la interfaz sin navegador, con cobertura del 100 % de líneas
 packages.txt            Tipografías de sustitución para la nube (Linux): Liberation y Carlito
 ```
 

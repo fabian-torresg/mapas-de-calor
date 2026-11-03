@@ -13,6 +13,9 @@ from mapacalor import paletas as pal
 
 import matplotlib.pyplot as plt  # noqa: E402  (mapacalor fija el backend antes)
 from mapacalor.render import categorias, exportar_geojson  # noqa: E402
+import openpyxl
+from interfaz.carga import _avance, mapa_cierre
+from interfaz.textos import rotulos_en_negrita
 
 
 # ---- datos
@@ -23,7 +26,6 @@ def test_valor_se_detecta_por_ser_la_primera_columna_numerica():
 
 
 def test_excel_sin_columnas_y_hoja_inexistente_avisan():
-    import openpyxl
     buf = io.BytesIO()
     openpyxl.Workbook().save(buf)
     with pytest.raises(dt.ArchivoInvalido):
@@ -107,10 +109,11 @@ def test_paletas_auxiliares():
 
 # ---- estado de la sesión
 def _guion_estado():
-    import streamlit as st
-    from interfaz.estado import fijar, iniciar_estado, restablecer_todo, sumar, subir_version
+    import streamlit as st  # noqa: PLC0415
+    from interfaz.estado import fijar, iniciar_estado, restablecer_todo, sumar, subir_version  # noqa: PLC0415
     iniciar_estado()
-    sumar("n"); sumar("n")
+    sumar("n")
+    sumar("n")
     fijar("x", 5)
     st.session_state.tablas = {"a": 1}
     subir_version("expo")
@@ -127,8 +130,6 @@ def test_funciones_de_estado():
 
 # ---- textos y animación de carga
 def test_rotulos_en_negrita_y_curva_de_carga():
-    from interfaz.carga import _avance, mapa_cierre
-    from interfaz.textos import rotulos_en_negrita
     assert rotulos_en_negrita("Total: 5 · Promedio: 2") == "**Total:** 5 · **Promedio:** 2"
     assert _avance(0) == 0 and _avance(5) < _avance(12) == 90 < _avance(30) <= 99 == _avance(100)
     assert "carga-fin" in mapa_cierre("Mapas de calor", 7)
@@ -191,3 +192,12 @@ def test_categorias_y_geojson_con_segmentos():
     assert categorias(None, mc.Estilo(nivel="departamento"), paleta) == {}
     datos = exportar_geojson(tabla, mc.Estilo(nivel="departamento"))
     assert b"features" in datos if isinstance(datos, bytes) else "features" in datos
+
+
+def test_hojas_de_csv_opciones_de_ciudad_y_region_con_segmento():
+    assert dt.hojas_excel("a.csv", b"") == []
+    for ciudad in gd.lista_ciudades():
+        assert dt.opciones_division(ciudad)
+    region = pd.DataFrame({"R": ["Andina", "Caribe"], "V": [1, 2], "S": ["x", "y"]})
+    em = dt.emparejar(region, None, "V", nivel="region", col_region="R", col_grupo="S")
+    assert set(em.tabla.grupo) == {"x", "y"}

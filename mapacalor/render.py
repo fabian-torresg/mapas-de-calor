@@ -10,6 +10,7 @@ import re
 import textwrap
 import threading
 from dataclasses import replace, dataclass, field
+from pathlib import Path
 
 import geopandas as gpd
 import matplotlib
@@ -17,6 +18,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.patheffects as pe  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib import font_manager  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from matplotlib.colors import to_hex, to_rgb  # noqa: E402
@@ -202,7 +204,11 @@ FUENTES = {"arial": ["Arial", "Liberation Sans", "DejaVu Sans"],
            "calibri": ["Calibri", "Carlito", "Liberation Sans", "DejaVu Sans"],
            "times": ["Times New Roman", "Liberation Serif", "DejaVu Serif"],
            "georgia": ["Georgia", "Gelasio", "Liberation Serif", "DejaVu Serif"]}
+FUENTES["firma"] = ["Great Vibes", "Georgia", "Liberation Serif", "DejaVu Serif"]    # manuscrita, incluida en datos/fuentes (SIL OFL)
 FUENTES["sans"], FUENTES["serif"] = FUENTES["arial"], FUENTES["times"]  # nombres anteriores
+_FUENTE_FIRMA = Path(__file__).resolve().parent.parent / "datos" / "fuentes" / "GreatVibes-Regular.ttf"
+if _FUENTE_FIRMA.exists():
+    font_manager.fontManager.addfont(str(_FUENTE_FIRMA))
 
 
 def colores_texto(color_fondo: str) -> dict:
@@ -239,8 +245,6 @@ def calcular_resumen(p: dict, e: Estilo) -> dict | None:
         if e.nivel == "municipio" and con.departamento.nunique() > 1:
             etiqueta = etiqueta + " (" + con.departamento + ")"
         serie = pd.Series(con.valor.values, index=etiqueta.values).astype(float)
-    if serie.empty:
-        return None
     total = float(serie.sum())
     orden = serie.sort_values(ascending=False)
     pct = (lambda v: 100 * v / total) if total else (lambda v: float("nan"))
@@ -610,6 +614,7 @@ class _Medidas:
     base: float = 0.0
     alto_nota: float = 0.0
     alto_res: float = 0.0
+    pie: float = 0.17          # franja inferior reservada a la firma
     alto_tit: float = 0.0
     sep_tit: float = 0.0
     sep_sub: float = 0.0
@@ -719,8 +724,8 @@ def _calcular_medidas(esc: _Escena) -> _Medidas:
             m.lin_res += textwrap.wrap(linea, ancho_chars) or [""]
     m.esc_res = e.tam_resumen / 8.5
     m.alto_res = (0.36 * m.esc_res + 0.19 * m.esc_res * len(m.lin_res)) if m.lin_res else 0
-    m.fig_h = m.ax_h + m.tam_ley + alto_bloque_tit + m.alto_nota + m.alto_res + m.lista_h
-    m.base = m.alto_nota + m.alto_res  # resumen y nota, bajo la leyenda
+    m.fig_h = m.ax_h + m.tam_ley + alto_bloque_tit + m.alto_nota + m.alto_res + m.lista_h + m.pie
+    m.base = m.pie + m.alto_nota + m.alto_res  # firma, resumen y nota, bajo la leyenda
     # se amplía el encuadre en el eje que sobre, sin deformar
     ancho, alto = xlim[1] - xlim[0], ylim[1] - ylim[0]
     cx, cy = sum(xlim) / 2, sum(ylim) / 2
@@ -960,7 +965,7 @@ def _pie(fig, esc: _Escena, m: _Medidas, subrayar: list):
     """Resumen de los datos y nota al pie."""
     e, tx = esc.e, esc.tx
     if m.lin_res:
-        y0 = m.alto_nota + m.alto_res - 0.12
+        y0 = m.base - 0.12
         fig.text(m.margen, y0 / m.fig_h, _tx(e, "resumen"), fontsize=e.tam_resumen * 1.18, color=tx["leyenda"], va="top",
                  **{**_fuente(e.estilo_resumen, e.tipo_resumen), "fontweight": "bold"})
         for k, linea in enumerate(m.lin_res):
@@ -968,7 +973,7 @@ def _pie(fig, esc: _Escena, m: _Medidas, subrayar: list):
                                            fontsize=e.tam_resumen, color=e.color_resumen or tx["resumen"], va="top",
                                            estilo=e.estilo_resumen, tipo=e.tipo_resumen)
     if e.fuente_nota:
-        t = fig.text(m.margen, _pulg(e.nota_tam) * 0.7 / m.fig_h, e.fuente_nota, fontsize=e.nota_tam, color=tx["nota"],
+        t = fig.text(m.margen, (m.pie + _pulg(e.nota_tam) * 0.7) / m.fig_h, e.fuente_nota, fontsize=e.nota_tam, color=tx["nota"],
                      **_fuente(e.estilo_nota, e.tipo_nota))
         if "subrayado" in e.estilo_nota:
             subrayar.append(t)
@@ -996,6 +1001,17 @@ def _cartografia(ax, esc: _Escena, mini, amp, huella_amp) -> tuple:
     return esq_escala, esq_norte
 
 
+_FIRMA = {"es": "Por Ft.", "en": "By Ft."}
+
+
+def _firma(fig, esc: _Escena, m: _Medidas):
+    """Firma casi imperceptible en la esquina inferior derecha: manuscrita, pequeña y apenas distinta del fondo."""
+    e = esc.e
+    base = "#F1F5F9" if pal.es_oscuro(e.color_fondo) else "#26302E"
+    fig.text(1 - 0.09 / m.fig_w, 0.018 / m.fig_h, _FIRMA.get(e.idioma, _FIRMA["es"]), ha="right", va="bottom",
+             fontsize=9, color=_mezclar(base, e.color_fondo, 0.8), **_fuente([], "firma"))
+
+
 def _dibujar(tabla: pd.DataFrame | None, e: Estilo):
     esc = _preparar_escena(tabla, e)
     e, p, u = esc.e, esc.p, esc.u
@@ -1020,6 +1036,7 @@ def _dibujar(tabla: pd.DataFrame | None, e: Estilo):
         _leyenda_escala(fig, esc, m, subrayar)
     _pie(fig, esc, m, subrayar)
     esq_escala, esq_norte = _cartografia(ax, esc, mini, amp, huella_amp)
+    _firma(fig, esc, m)
     _subrayar(fig, subrayar)
     info = {"con_dato": p["con_dato"], "unidades": len(u), "fuera_del_area": p["fuera"],
             "minimapa": mini, "escala": esq_escala, "norte": esq_norte, "tonos": esc.tonos, "ampliacion": amp, "resumen": m.res,

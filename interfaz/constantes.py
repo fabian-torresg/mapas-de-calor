@@ -24,7 +24,8 @@ AYUDA_ESPACIO = ("Espacio extra, en puntos, antes del elemento: sobre el título
                  "mapa y la leyenda o entre el mapa y la nota. Un valor negativo lo acerca al elemento anterior.")
 
 
-TIPOGRAFIAS = {"Arial": "arial", "Calibri": "calibri", "Times New Roman": "times", "Georgia": "georgia"}
+TIPOGRAFIAS = {"Arial": "arial", "Calibri": "calibri", "Times New Roman": "times", "Georgia": "georgia",
+               "Great Vibes": "firma"}
 
 
 FUENTE_TEXTOS = (("tit", "tit"), ("tit", "sub"), ("tit", "nota"), ("ley", "ley"), ("ley", "ext"), ("ley", "extd"),

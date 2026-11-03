@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import hashlib
 import html
-import io
+from functools import partial
 
 import pandas as pd
 import streamlit as st
 
 from interfaz.constantes import ANCHO_COLUMNA, AYUDA_SEG
+from interfaz.descargas import tabla_en_formato
 from interfaz.estado import K
 from interfaz.textos import t
 from mapacalor import datos as dt
@@ -126,11 +127,7 @@ def _editor_de_tabla(base: pd.DataFrame, ed_key: str, lugares_fijos: list[str]) 
 
 def _descargar_tabla(contenedor, editada: pd.DataFrame, nivel: str):
     with contenedor.popover(t(":material/download: Descargar"), width="content", help=t("Descargar la tabla tal como está.")):
-        def tabla_xlsx():
-            buf = io.BytesIO()
-            editada.to_excel(buf, index=False, sheet_name=t("Datos"))
-            return buf.getvalue()
-        st.download_button(t(":material/download: Excel"), tabla_xlsx, file_name=f"datos_{nivel}.xlsx", width="stretch",
+        st.download_button(t(":material/download: Excel"), partial(tabla_en_formato, editada, "xlsx", t("Datos")), file_name=f"datos_{nivel}.xlsx", width="stretch",
                            key="dl_tabla_xlsx")
         st.download_button(t(":material/download: CSV"), editada.to_csv(index=False).encode("utf-8-sig"),
                            file_name=f"datos_{nivel}.csv", width="stretch", key="dl_tabla_csv")

@@ -7,15 +7,13 @@ from __future__ import annotations
 import hashlib
 import html
 import importlib
-import io
 import json
 import os
-import re
 import struct
 import threading
 import time
-import zipfile
 from dataclasses import asdict
+from functools import partial
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -31,6 +29,7 @@ from interfaz.controles import (
     boton_aa, cantidad, cuadros_de_color, fila_con_aa, fila_numeros, muestra, opcion_en_linea, panel_aa, panel_texto,
     selector_deptos, selector_paleta, tipo_de_linea)
 from interfaz.carga import mapa_carga, mapa_cierre
+from interfaz.descargas import dibujar_en, tabla_en_formato, zip_de_mapas
 from interfaz.estado import K, boton_restablecer, iniciar_estado, restablecer_todo, sumar
 from interfaz.estilos import CSS, SCRIPT
 from interfaz.guia import AYUDA_ES
@@ -898,16 +897,6 @@ with tab_mapa:
         for x in cola:
             st.session_state[f"sel_{x['id']}"] = st.session_state["sel_todos"]
 
-    def zip_de_cola(items, fmt):
-        buf, usados = io.BytesIO(), {}
-        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-            for item in items:
-                base = re.sub(r"[^\w\-]+", "_", item["nombre"]).strip("_") or "mapa"
-                usados[base] = usados.get(base, 0) + 1
-                nom = base if usados[base] == 1 else f"{base}_{usados[base]}"
-                zf.writestr(f"{nom}.{fmt}", render(item["tabla"], item["estilo"], fmt)[0])
-        return buf.getvalue()
-
     def formato_cola(en_linea=False):
         fmt = st.selectbox(t("Formato"), FORMATOS, index=FORMATOS.index(st.session_state.get("_fmt_cola", FORMATOS[0])),
                            key="fmt_zip", format_func=str.upper, label_visibility="collapsed" if en_linea else "visible")
@@ -959,7 +948,7 @@ with tab_mapa:
                             c_fmt_zip, c_zip, c_vaciar = st.columns(3, vertical_alignment="bottom", gap="xsmall")
                             with c_fmt_zip:
                                 fmt_zip = formato_cola()
-                            c_zip.download_button(t(":material/download: ZIP"), lambda: zip_de_cola(cola, fmt_zip),
+                            c_zip.download_button(t(":material/download: ZIP"), partial(zip_de_mapas, cola, fmt_zip, render),
                                                   file_name="mapas_de_calor.zip", on_click="ignore", width="stretch",
                                                   help=t("Descargar todos los mapas guardados en un ZIP"))
                             c_vaciar.button(t(":material/delete: Vaciar"), width="stretch",
@@ -976,8 +965,6 @@ with tab_mapa:
                     for i, col in zip(range(ini, min(ini + por_fila, len(cola))), st.columns(por_fila, gap="small"), strict=False):
                         item = cola[i]
                         with col.container(key=f"miniatura_{i}"):
-                            if i == sel:
-                                st.markdown('<span class="mini-sel"></span>', unsafe_allow_html=True)
                             st.image(vista_guardada(item))
                             st.button(item["nombre"], key=f"elegir_{i}", on_click=elegir_mapa_cola, args=(i,))
                             with st.container(horizontal=True, vertical_alignment="center", gap="xxsmall", wrap=False, key=f"pie_{i}"):
@@ -1008,7 +995,7 @@ with tab_mapa:
                             fmt_zip = formato_cola(en_linea=True)
                         st.download_button(t(":material/download: Descargar {n} seleccionados").format(n=len(marcados)) if marcados
                                            else t(":material/download: Descargar todos"),
-                                           lambda: zip_de_cola(marcados or cola, fmt_zip), file_name="mapas_de_calor.zip",
+                                           partial(zip_de_mapas, marcados or cola, fmt_zip, render), file_name="mapas_de_calor.zip",
                                            on_click="ignore", help=t("Descargar en un ZIP los mapas seleccionados, o todos si no hay selección"))
                         st.button(t(":material/delete: Eliminar seleccionados"), disabled=not marcados, on_click=eliminar_de_cola,
                                   args=({x["id"] for x in marcados},), help=t("Eliminar los mapas seleccionados"))
@@ -1056,8 +1043,7 @@ with caja_descarga:
     if formato == "png" and dpi == DPI_VISTA:
         archivo_final = png
     else:   # el archivo se dibuja solo al pulsar la descarga
-        def archivo_final():
-            return render(tabla, {**asdict(estilo), "dpi": dpi}, formato)[0]
+        archivo_final = partial(dibujar_en, render, tabla, {**asdict(estilo), "dpi": dpi}, formato)
     partes = {"region": regiones, "ciudad": [ciudad]}.get(nivel, deptos)
     nombre_archivo = "mapa_calor_" + ("_".join(gd.norm(d).lower() for d in partes[:3]) or "colombia")
     st.download_button(t(":material/download: Descargar {f}").format(f=formato.upper()), archivo_final,
@@ -1076,22 +1062,10 @@ with caja_descarga:
         nombres = {"ciudad": "Ciudad", "departamento": "Departamento", "municipio": "Municipio", "region": "Región",
                    "division": "Localidad o comuna", "valor": "Valor", "grupo": "Segmento"}
         tabla_legible = tabla.rename(columns={c: t(n) for c, n in nombres.items()})
-        if formato_datos == "csv":
-            archivo_datos = tabla_legible.to_csv(index=False).encode("utf-8-sig")
-        elif formato_datos == "xlsx":
-            def archivo_datos():
-                buf = io.BytesIO()
-                tabla_legible.to_excel(buf, index=False, sheet_name=t("Datos"))
-                return buf.getvalue()
-        elif formato_datos == "json":
-            archivo_datos = tabla_legible.to_json(orient="records", force_ascii=False, indent=2).encode("utf-8")
-        elif formato_datos == "parquet":
-            def archivo_datos():
-                buf = io.BytesIO()
-                tabla_legible.to_parquet(buf, index=False)
-                return buf.getvalue()
-        else:   # los polígonos se arman solo al pulsar la descarga
-            archivo_datos = lambda: exportar_geojson(tabla, estilo)  # noqa: E731
+        if formato_datos == "geojson":   # los polígonos se arman solo al pulsar la descarga
+            archivo_datos = partial(exportar_geojson, tabla, estilo)
+        else:
+            archivo_datos = partial(tabla_en_formato, tabla_legible, formato_datos, t("Datos"))
         with fila_datos:
             st.download_button(":material/download:", archivo_datos, file_name=f"{nombre_archivo}.{formato_datos}")
 
