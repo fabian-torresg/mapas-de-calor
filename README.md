@@ -1,10 +1,16 @@
 # Mapas de calor
 
+[![Streamlit](https://img.shields.io/badge/Streamlit-App%20en%20l%C3%ADnea-FF4B4B?logo=streamlit&logoColor=white)](https://mapas-de-calor.streamlit.app/)
+[![Pruebas](https://github.com/fabian-torresg/mapas-de-calor/actions/workflows/pruebas.yml/badge.svg)](https://github.com/fabian-torresg/mapas-de-calor/actions/workflows/pruebas.yml)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![Tecnologías](https://img.shields.io/badge/Tecnolog%C3%ADas-Pandas%20%7C%20GeoPandas%20%7C%20Matplotlib-orange)](#estructura)
+
 Aplicación en Python y Streamlit que genera mapas de calor (coropletas) de Colombia por departamento, municipio,
 región natural y localidad o comuna de 22 ciudades. Recibe datos escritos en la aplicación o cargados desde Excel o CSV,
 los asocia con la geografía y exporta el mapa listo para informes y presentaciones.
 
-**Aplicación en línea:** <https://mapas-calor.streamlit.app/>
+**Aplicación en línea:** <https://mapas-de-calor.streamlit.app/>
 
 ## Funcionalidades
 

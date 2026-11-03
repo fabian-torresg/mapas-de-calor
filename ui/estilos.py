@@ -17,6 +17,10 @@ div[data-testid='stElementContainer']:has(#ancla-tema){display:none}
 [data-testid='stAppDeployButton']{display:none}      /* Deploy solo sale al ejecutar en local */
 /* «Fork» de Community Cloud: tapaba el selector de idioma; el icono de GitHub se conserva */
 [data-testid='stToolbarActionButton']:has([data-testid='stToolbarActionButtonLabel']){display:none}
+/* pantallas medianas: la barra lateral queda fija, así que no puede quitarle más del 40 % al mapa */
+@media (min-width:769px){ [data-testid='stSidebar']{max-width:max(300px,40vw)} }
+/* pantallas estrechas: la tarjeta ocupa todo el ancho y el menú de Streamlit queda sobre su esquina; se le deja sitio */
+@media (max-width:900px){ .st-key-cab_tarjeta{padding-right:1.8rem} }
 /* la barra lateral deja solo el alto del botón de recoger */
 [data-testid='stSidebarHeader']{height:0.4rem;min-height:0;padding-top:0;padding-bottom:0}
 /* flecha de recoger la barra: junto a los iconos del título, solo al pasar el cursor */
@@ -327,6 +331,12 @@ body[data-zona='tabla'] [data-testid='stSidebar'] [class*='st-key-btn_tabla'] bu
 [class*='st-key-fila_op_'] > [data-testid='stElementContainer']:nth-child(1){flex:1 1 0;min-width:0}
 [class*='st-key-fila_op_'] > [data-testid='stElementContainer']:nth-child(2){flex:0 0 9.2rem;width:9.2rem!important}
 [class*='st-key-fila_op_'] p{margin:0;white-space:nowrap}
+/* celulares: la barra mide menos de 330 px; la lista pasa debajo de su nombre y los nombres largos pueden partirse */
+@media (max-width:480px){
+  [class*='st-key-fila_op_']{flex-wrap:wrap!important}
+  [class*='st-key-fila_op_'] > [data-testid='stElementContainer']:nth-child(n){flex:1 1 100%;width:100%!important}
+  [class*='st-key-fila_color_'] p,.etq-campo{white-space:normal}
+}
 [data-testid='stSidebar'] p:has([data-testid='stTooltipIcon']){white-space:nowrap}
 /* listas desplegables: opciones más juntas, igual en toda la aplicación */
 [role='listbox'] [role='option']{height:2.1rem!important;min-height:0!important}
