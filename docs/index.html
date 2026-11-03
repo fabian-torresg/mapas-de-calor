@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mapa de calor de Colombia por departamento y municipio</title>
+<meta name="description" content="Aplicación gratuita para crear mapas de calor de Colombia por departamento, municipio, región y comuna. Carga datos de Excel o CSV y descarga el mapa.">
+<meta name="author" content="Fabián Torres">
+<meta name="theme-color" content="#13263A">
+<link rel="canonical" href="https://fabian-torresg.github.io/mapas-de-calor/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2313263A'/%3E%3Cpath d='M8 9l6-2 5 3 5-1v13l-5 2-5-3-6 2z' fill='%236FA3D8'/%3E%3Cpath d='M14 7v15M19 10v15' stroke='%2313263A' stroke-width='1.5' fill='none'/%3E%3C/svg%3E">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:site_name" content="Mapas de calor">
+<meta property="og:title" content="Mapa de calor de Colombia por departamento y municipio">
+<meta property="og:description" content="Crea mapas de calor de Colombia desde Excel o CSV: departamentos, municipios, regiones y comunas. Gratis y sin registro.">
+<meta property="og:url" content="https://fabian-torresg.github.io/mapas-de-calor/">
+<meta property="og:image" content="https://fabian-torresg.github.io/mapas-de-calor/img/departamentos.png">
+<meta property="og:image:alt" content="Mapa de calor de Colombia por departamento con los cinco valores más altos numerados">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Mapas de calor",
+  "alternateName": "Mapa de calor de Colombia",
+  "description": "Aplicación web para crear mapas de calor (coropletas) de Colombia por departamento, municipio, región natural y localidad o comuna, a partir de datos en Excel o CSV.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "inLanguage": ["es", "en"],
+  "url": "https://mapas-de-calor.streamlit.app/",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "COP" },
+  "license": "https://opensource.org/licenses/MIT",
+  "codeRepository": "https://github.com/fabian-torresg/mapas-de-calor",
+  "screenshot": "https://fabian-torresg.github.io/mapas-de-calor/img/departamentos.png",
+  "author": { "@type": "Person", "name": "Fabián Torres", "url": "https://github.com/fabian-torresg" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Qué niveles geográficos admite?",
+      "acceptedAnswer": { "@type": "Answer", "text": "País completo, regiones naturales, departamentos, municipios (1.123) y la división interna de 22 ciudades (localidades, comunas o corregimientos)." } },
+    { "@type": "Question", "name": "¿Cómo se cargan los datos?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Se escriben en una tabla dentro de la aplicación o se cargan desde un archivo Excel (XLSX, XLS) o CSV. Las columnas se reconocen por su encabezado: Departamento, Municipio, Valor y, de forma opcional, Segmento." } },
+    { "@type": "Question", "name": "¿En qué formatos se descarga el mapa?",
+      "acceptedAnswer": { "@type": "Answer", "text": "En PNG, JPG, TIFF, SVG o PDF, con resolución configurable. Los datos se pueden descargar en CSV, Excel, JSON, Parquet o GeoJSON." } },
+    { "@type": "Question", "name": "¿Tiene costo o requiere registro?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. La aplicación es gratuita, no requiere cuenta y su código es abierto bajo licencia MIT." } },
+    { "@type": "Question", "name": "¿Se almacenan los archivos cargados?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Los archivos se procesan en memoria durante la sesión y no se guardan. Aun así, se recomienda no subir datos sensibles." } }
+  ]
+}
+</script>
+
+<style>
+:root{
+  --fondo:#F4F6F9; --tarjeta:#FFFFFF; --texto:#1E2A33; --suave:#53606D; --borde:#D5DCE4;
+  --marino:#13263A; --azul:#1F4E79; --azul-claro:#6FA3D8; --boton-texto:#FFFFFF;
+  --ancho:68rem;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --fondo:#0F1620; --tarjeta:#1A2430; --texto:#E6EBF0; --suave:#A9B6C3; --borde:#2C3A48;
+    --marino:#0B1622; --azul:#7FA7D1; --azul-claro:#7FA7D1; --boton-texto:#0B1622;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--texto);line-height:1.6;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-size:1.0625rem}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--azul)}
+a:focus-visible,.boton:focus-visible{outline:3px solid var(--azul-claro);outline-offset:3px}
+.contenedor{width:100%;max-width:var(--ancho);margin:0 auto;padding:0 1rem}
+
+/* cabecera */
+.cabecera{background:var(--marino);color:#E7EEF5}
+.cabecera .contenedor{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.4rem 1rem;padding-top:0.9rem;padding-bottom:0.9rem}
+.marca{font-weight:700;font-size:1.2rem;letter-spacing:-0.01em;color:#fff;text-decoration:none;white-space:nowrap}
+.cabecera nav{display:flex;flex-wrap:wrap;gap:0.3rem 1.25rem}
+.cabecera nav a{color:#C9D8E8;text-decoration:none;font-size:0.95rem}
+.cabecera nav a:hover{color:#fff;text-decoration:underline}
+
+/* portada */
+.portada{background:var(--marino);color:#E7EEF5;padding:2.5rem 0 3.5rem}
+.portada .contenedor{display:grid;gap:2.5rem;align-items:center}
+.portada h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.1;letter-spacing:-0.02em;margin:0 0 1rem;color:#fff}
+.portada p{margin:0 0 1.5rem;color:#C9D8E8;max-width:36rem}
+.acciones{display:flex;flex-wrap:wrap;gap:0.75rem}
+.boton{display:inline-block;padding:0.8rem 1.4rem;border-radius:0.5rem;font-weight:600;text-decoration:none;
+  background:#fff;color:var(--marino);border:2px solid #fff}
+.boton:hover{background:#E7EEF5}
+.boton.secundario{background:transparent;color:#fff;border-color:#6F89A6}
+.boton.secundario:hover{background:rgba(255,255,255,0.08)}
+.portada figure{margin:0;background:#fff;border-radius:0.75rem;padding:0.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.35)}
+.portada img{border-radius:0.4rem;width:100%}
+@media (min-width:56rem){
+  .portada .contenedor{grid-template-columns:1.05fr 0.95fr}
+}
+
+/* secciones */
+section{padding:3.5rem 0}
+section h2{font-size:clamp(1.5rem,3.5vw,2rem);line-height:1.2;letter-spacing:-0.01em;margin:0 0 0.5rem}
+.intro{color:var(--suave);margin:0 0 2rem;max-width:44rem}
+.rejilla{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+.tarjeta{background:var(--tarjeta);border:1px solid var(--borde);border-radius:0.75rem;padding:1.25rem 1.35rem}
+.tarjeta h3{margin:0 0 0.4rem;font-size:1.1rem}
+.tarjeta p{margin:0;color:var(--suave);font-size:1rem}
+
+.pasos{counter-reset:paso;display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));padding:0;margin:0;list-style:none}
+.pasos li{counter-increment:paso;background:var(--tarjeta);border:1px solid var(--borde);border-radius:0.75rem;padding:1.25rem 1.35rem}
+.pasos li::before{content:counter(paso);display:inline-flex;width:2rem;height:2rem;align-items:center;justify-content:center;
+  border-radius:50%;background:var(--azul);color:var(--boton-texto);font-weight:700;margin-bottom:0.6rem}
+.pasos h3{margin:0 0 0.3rem;font-size:1.1rem}
+.pasos p{margin:0;color:var(--suave)}
+
+.galeria{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.galeria figure{margin:0;background:var(--tarjeta);border:1px solid var(--borde);border-radius:0.75rem;overflow:hidden}
+.galeria img{width:100%;aspect-ratio:4/5;object-fit:contain;background:#fff}
+.galeria figcaption{padding:0.8rem 1rem;color:var(--suave);font-size:0.95rem}
+.nota{color:var(--suave);font-size:0.95rem;margin-top:1rem}
+
+.alterna{background:var(--tarjeta);border-top:1px solid var(--borde);border-bottom:1px solid var(--borde)}
+.alterna .tarjeta,.alterna .pasos li{background:var(--fondo)}
+
+details{background:var(--tarjeta);border:1px solid var(--borde);border-radius:0.6rem;margin-bottom:0.6rem}
+summary{cursor:pointer;padding:0.9rem 1.1rem;font-weight:600;list-style-position:inside}
+details p{margin:0;padding:0 1.1rem 1rem;color:var(--suave)}
+
+.cierre{text-align:center}
+.cierre .boton{background:var(--azul);color:var(--boton-texto);border-color:var(--azul)}
+.cierre .boton:hover{filter:brightness(1.08)}
+
+footer{background:var(--marino);color:#C9D8E8;padding:2rem 0;font-size:0.95rem}
+footer a{color:#fff}
+footer p{margin:0 0 0.5rem}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="contenedor">
+    <a class="marca" href="#inicio">Mapas de calor</a>
+    <nav aria-label="Principal">
+      <a href="#funciones">Funciones</a>
+      <a href="#ejemplos">Ejemplos</a>
+      <a href="#preguntas">Preguntas</a>
+      <a href="https://github.com/fabian-torresg/mapas-de-calor">Código</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <div class="portada">
+    <div class="contenedor">
+      <div>
+        <h1>Mapas de calor de Colombia por departamento, municipio y ciudad</h1>
+        <p>Aplicación gratuita y sin registro. Se escriben o cargan los datos desde Excel o CSV, se elige el área y se
+          descarga un mapa de calor listo para informes y presentaciones.</p>
+        <div class="acciones">
+          <a class="boton" href="https://mapas-de-calor.streamlit.app/">Abrir la aplicación</a>
+          <a class="boton secundario" href="https://github.com/fabian-torresg/mapas-de-calor">Ver el código</a>
+        </div>
+      </div>
+      <figure>
+        <img src="img/departamentos.png" width="1300" height="1346"
+             alt="Mapa de calor de Colombia por departamento, con los cinco valores más altos numerados y una escala de color">
+      </figure>
+    </div>
+  </div>
+
+  <section id="funciones">
+    <div class="contenedor">
+      <h2>Qué permite hacer</h2>
+      <p class="intro">Un mismo flujo para todo el país: desde el mapa nacional por departamentos hasta las localidades de una ciudad.</p>
+      <div class="rejilla">
+        <div class="tarjeta"><h3>Niveles geográficos</h3>
+          <p>País, regiones naturales, departamentos, 1.123 municipios y la división interna de 22 ciudades (localidades, comunas y corregimientos).</p></div>
+        <div class="tarjeta"><h3>Datos desde Excel o CSV</h3>
+          <p>Los nombres se normalizan (tildes, mayúsculas, alias) y los que no se reconocen reciben una sugerencia. Admite formatos numéricos colombianos e internacionales.</p></div>
+        <div class="tarjeta"><h3>Colores y escalas</h3>
+          <p>Escala lineal, de raíz, logarítmica o por cuantiles, con 15 paletas o colores propios, y categorías por segmento.</p></div>
+        <div class="tarjeta"><h3>Diseño del mapa</h3>
+          <p>Lupa sobre lugares pequeños, minimapa, barra de escala, flecha del norte, etiquetas, leyenda y diez plantillas.</p></div>
+        <div class="tarjeta"><h3>Exportación</h3>
+          <p>Mapa en PNG, JPG, TIFF, SVG o PDF. Datos en CSV, Excel, JSON, Parquet o GeoJSON.</p></div>
+        <div class="tarjeta"><h3>Español e inglés</h3>
+          <p>Interfaz y mapas en ambos idiomas, con modo claro y oscuro, y adaptada a computador, tableta y celular.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alterna">
+    <div class="contenedor">
+      <h2>Cómo funciona</h2>
+      <p class="intro">Tres pasos, sin instalar nada.</p>
+      <ol class="pasos">
+        <li><h3>Elegir el área</h3><p>Todo el país, una región, uno o varios departamentos, municipios específicos o una ciudad.</p></li>
+        <li><h3>Cargar los datos</h3><p>Escribirlos en la tabla de la aplicación o subir un archivo con las columnas Departamento, Municipio y Valor.</p></li>
+        <li><h3>Ajustar y descargar</h3><p>Definir colores, escala y textos, y descargar el mapa en el formato necesario.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="ejemplos">
+    <div class="contenedor">
+      <h2>Ejemplos</h2>
+      <p class="intro">Mapas generados con la aplicación a partir de datos de prueba.</p>
+      <div class="galeria">
+        <figure>
+          <img src="img/departamentos.png" width="1300" height="1346" loading="lazy"
+               alt="Mapa de calor de Colombia por departamento con paleta de amarillo a rojo oscuro">
+          <figcaption>Colombia por departamento, con ranking de los cinco valores más altos.</figcaption>
+        </figure>
+        <figure>
+          <img src="img/municipios.png" width="910" height="1175" loading="lazy"
+               alt="Mapa de calor de los municipios de Cundinamarca y Boyacá con paleta verde y minimapa de ubicación">
+          <figcaption>Municipios de Cundinamarca y Boyacá, con minimapa de ubicación.</figcaption>
+        </figure>
+        <figure>
+          <img src="img/ciudad.png" width="910" height="1459" loading="lazy"
+               alt="Mapa de calor de las localidades de Bogotá con paleta violeta">
+          <figcaption>Localidades de Bogotá.</figcaption>
+        </figure>
+      </div>
+      <p class="nota">Los valores de los ejemplos son ficticios.</p>
+    </div>
+  </section>
+
+  <section id="preguntas" class="alterna">
+    <div class="contenedor">
+      <h2>Preguntas frecuentes</h2>
+      <p class="intro">Lo esencial antes de empezar.</p>
+      <details><summary>¿Qué niveles geográficos admite?</summary>
+        <p>País completo, regiones naturales, departamentos, municipios (1.123) y la división interna de 22 ciudades (localidades, comunas o corregimientos).</p></details>
+      <details><summary>¿Cómo se cargan los datos?</summary>
+        <p>Se escriben en una tabla dentro de la aplicación o se cargan desde un archivo Excel (XLSX, XLS) o CSV. Las columnas se reconocen por su encabezado: Departamento, Municipio, Valor y, de forma opcional, Segmento.</p></details>
+      <details><summary>¿En qué formatos se descarga el mapa?</summary>
+        <p>En PNG, JPG, TIFF, SVG o PDF, con resolución configurable. Los datos se pueden descargar en CSV, Excel, JSON, Parquet o GeoJSON.</p></details>
+      <details><summary>¿Tiene costo o requiere registro?</summary>
+        <p>No. La aplicación es gratuita, no requiere cuenta y su código es abierto bajo licencia MIT.</p></details>
+      <details><summary>¿Se almacenan los archivos cargados?</summary>
+        <p>No. Los archivos se procesan en memoria durante la sesión y no se guardan. Aun así, se recomienda no subir datos sensibles.</p></details>
+    </div>
+  </section>
+
+  <section class="cierre">
+    <div class="contenedor">
+      <h2>Crear un mapa de calor ahora</h2>
+      <p class="intro" style="margin-left:auto;margin-right:auto">Si la aplicación estuvo sin uso, la primera carga puede tardar unos segundos.</p>
+      <a class="boton" href="https://mapas-de-calor.streamlit.app/">Abrir la aplicación</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="contenedor">
+    <p><strong>Mapas de calor</strong> · Desarrollado por <a href="https://github.com/fabian-torresg">Fabián Torres</a> ·
+      <a href="https://www.linkedin.com/in/fabian-torresg">LinkedIn</a> ·
+      <a href="https://github.com/fabian-torresg/mapas-de-calor">Código fuente</a> · Licencia MIT</p>
+    <p>Fuentes cartográficas: <a href="https://gadm.org">GADM 4.1</a>, <a href="https://www.naturalearthdata.com">Natural Earth</a>
+      y © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -12,6 +12,8 @@ los asocia con la geografía y exporta el mapa listo para informes y presentacio
 
 **Aplicación en línea:** <https://mapas-de-calor.streamlit.app/>
 
+**Presentación:** <https://fabian-torresg.github.io/mapas-de-calor/>
+
 ## Funcionalidades
 
 - **Área:** país, regiones, departamentos, municipios (1.123) y ciudades con división interna. Admite selección parcial
@@ -72,6 +74,7 @@ app.py          Flujo de la página y barra lateral
 ui/             Controles, estilos, textos y pestañas de la interfaz
 mapacalor/      Motor: geometrías, lectura y emparejamiento de datos, dibujo y paletas
 data/           Catálogo de municipios, geometrías propias y tipografía de la firma
+docs/           Página de presentación (GitHub Pages)
 examples/       Datos de ejemplo
 tests/          Pruebas con pytest
 ```
