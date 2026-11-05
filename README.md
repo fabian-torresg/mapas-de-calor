@@ -35,11 +35,9 @@ Mapas generados con la aplicación a partir de datos ficticios (`examples/datos_
 | | | |
 | --- | --- | --- |
 | ![Colombia por departamento](docs/img/departamentos.png) | ![Municipios de Cundinamarca y Boyacá](docs/img/municipios.png) | ![Localidades de Bogotá](docs/img/ciudad.png) |
-| Departamentos, con ranking | Municipios, con minimapa | Localidades de Bogotá |
-| ![Modo oscuro](docs/img/oscuro.png) | ![Regiones naturales en inglés](docs/img/regiones.png) | ![Comunas de Medellín](docs/img/medellin.png) |
-| Modo oscuro, vecinos y escala | Regiones, en inglés | Comunas de Medellín |
-| ![Antioquia por municipios](docs/img/antioquia.png) | | |
-| Antioquia, por cuantiles | | |
+| Departamentos, con ranking | Municipios, con minimapa y sin leyenda | Localidades de Bogotá, con nombres |
+| ![Regiones naturales en inglés](docs/img/regiones.png) | ![Comunas de Medellín](docs/img/medellin.png) | ![Antioquia por municipios](docs/img/antioquia.png) |
+| Regiones, en inglés | Comunas de Medellín, con ampliación | Antioquia, con resumen estadístico |
 
 ## Instalación
 
