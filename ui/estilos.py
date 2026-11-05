@@ -468,26 +468,27 @@ function ponerTitulos() {
   });
 }
 const TRADUCCIONES_ES = [   // mensajes que Streamlit escribe en inglés dentro del navegador
-  [/^Number is outside the allowed range\. Please enter a value between (\S+) and (\S+)\.$/, "El número está fuera del rango permitido. Ingresar un valor entre $1 y $2."],
+  [/^(Error: )?Number is outside the allowed range\. Please enter a value between (\S+) and (\S+)\.$/, "$1El número está fuera del rango permitido. Ingresar un valor entre $2 y $3."],
   [/^Failed to generate file for download$/, "No se pudo generar el archivo para la descarga."],
   [/^Press Enter to apply$/, "Pulsar Enter para aplicar"],
   [/^Press Ctrl\+Enter to apply$/, "Pulsar Ctrl+Enter para aplicar"],
   [/^Press Cmd\+Enter to apply$/, "Pulsar Cmd+Enter para aplicar"],
   [/^Please enter a (valid )?number\.?$/, "Ingresar un número válido."],
 ];
-function traducirStreamlit() {
+function traducirNodo(raiz) {
+  const it = doc.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
+  for (let n = it.nextNode(); n; n = it.nextNode()) {
+    const txt = n.nodeValue.trim();
+    if (txt.length < 12 || txt.length > 140) continue;
+    for (const [er, es] of TRADUCCIONES_ES) {
+      if (er.test(txt)) { n.nodeValue = txt.replace(er, es); break; }
+    }
+  }
+}
+function traducirStreamlit() {   // el aviso del campo numérico cambia de texto sin agregar nodos: se revisa a intervalos
   const ancla = doc.getElementById("ancla-tema");
   if (!ancla || ancla.dataset.lang !== "es") return;
-  doc.querySelectorAll("[data-baseweb='popover'], [data-baseweb='tooltip'], [role='tooltip'], [data-testid='stAlert'], [data-testid='stSidebar']").forEach(raiz => {
-    const it = doc.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
-    for (let n = it.nextNode(); n; n = it.nextNode()) {
-      const txt = n.nodeValue.trim();
-      if (txt.length < 12 || txt.length > 140) continue;
-      for (const [er, es] of TRADUCCIONES_ES) {
-        if (er.test(txt)) { n.nodeValue = txt.replace(er, es); break; }
-      }
-    }
-  });
+  doc.querySelectorAll("[data-testid='stNumberInputContainer'], [data-testid='stAlert'], [data-testid='stDownloadButton']").forEach(traducirNodo);
 }
 function accesibilidad() {
   // idioma del documento, texto alternativo de los mapas y nombre de los botones de restablecer
@@ -503,6 +504,11 @@ function sinDesplazamientoLateral() {
 }
 if (!doc.__tema) {
   doc.__tema = true;
+  new MutationObserver((cambios) => {
+    const ancla = doc.getElementById("ancla-tema");
+    if (!ancla || ancla.dataset.lang !== "es") return;
+    cambios.forEach(c => c.addedNodes.forEach(n => traducirNodo(n.nodeType === 3 ? n.parentNode : n)));
+  }).observe(doc.body, { childList: true, subtree: true });
   setInterval(() => {
     aplicarTema(); sinDesplazamientoLateral(); ponerTitulos(); accesibilidad(); traducirStreamlit();
     // color de las tarjetas según el tema (blanco en claro, gris azulado en oscuro)
