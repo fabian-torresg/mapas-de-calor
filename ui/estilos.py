@@ -467,28 +467,96 @@ function ponerTitulos() {
     if (clave && b.title !== titulos[clave]) b.title = titulos[clave];
   });
 }
-const TRADUCCIONES_ES = [   // mensajes que Streamlit escribe en inglés dentro del navegador
+// Textos que Streamlit trae en inglés dentro del navegador (se traducen con la app en español). Los nombres de los
+// iconos Material (download, keyboard_arrow_right...) no se tocan: son texto que la fuente convierte en dibujo.
+const EXACTOS_ES = {
+  "No results": "Sin resultados", "Clear all": "Borrar todo", "Select all": "Seleccionar todo", "Clear value": "Borrar valor",
+  "Clear selection": "Borrar selección", "Selectbox options": "Opciones de la lista", "Choose an option": "Elegir una opción",
+  "Choose options": "Elegir opciones", "Choose or add an option": "Elegir o agregar una opción",
+  "Choose or add options": "Elegir o agregar opciones", "Add an option": "Agregar una opción",
+  "No options to select": "No hay opciones para elegir", "Selected values": "Valores elegidos", "Color picker": "Selector de color",
+  "Color Picker": "Selector de color", "Show password": "Mostrar contraseña", "Invalid input.": "Entrada no válida.",
+  "Invalid data type": "Tipo de dato no válido", "Add files": "Agregar archivos", "Browse files": "Buscar archivos",
+  "Upload directories": "Subir carpetas", "file upload": "subir archivo", "Drag and drop a file here": "Arrastrar un archivo aquí",
+  "Drag and drop files here": "Arrastrar archivos aquí", "Delete row(s)": "Eliminar filas", "Add row": "Agregar fila",
+  "Download as CSV": "Descargar como CSV", "Hide column": "Ocultar columna", "Pin column": "Fijar columna",
+  "Unpin column": "Desfijar columna", "Sort ascending": "Ordenar de menor a mayor", "Sort descending": "Ordenar de mayor a menor",
+  "Autosize": "Ajustar ancho", "Autosize all columns": "Ajustar ancho de todas las columnas", "Search": "Buscar",
+  "Show/hide columns": "Mostrar u ocultar columnas", "Fullscreen": "Pantalla completa", "Exit fullscreen": "Salir de pantalla completa",
+  "View fullscreen": "Ver en pantalla completa", "Enter fullscreen": "Pantalla completa", "No clipboard data": "No hay datos en el portapapeles",
+  "Collapse sidebar": "Contraer barra lateral", "Expand sidebar": "Expandir barra lateral", "Sidebar": "Barra lateral",
+  "Main menu": "Menú principal", "Skip to main content": "Saltar al contenido principal", "Copy version to clipboard": "Copiar la versión",
+  "Close": "Cerrar", "Open": "Abrir", "Theme": "Tema", "Rerun": "Volver a ejecutar", "Auto rerun": "Ejecutar de nuevo automáticamente",
+  "Settings": "Configuración", "Print": "Imprimir", "Deploy": "Publicar", "About": "Acerca de", "Clear cache": "Borrar la caché",
+  "Record a screencast": "Grabar la pantalla", "Report a bug": "Informar de un error", "Get help": "Ayuda", "Developer options": "Opciones de desarrollo",
+  "Running...": "Ejecutando...", "Stop script": "Detener", "Connecting": "Conectando", "Made with": "Hecho con", "Made with Streamlit v": "Hecho con Streamlit v", "Help": "Ayuda", "download icon": "icono de descarga", "help icon": "icono de ayuda",
+  "Scroll tabs left": "Desplazar pestañas a la izquierda", "Scroll tabs right": "Desplazar pestañas a la derecha",
+  "Previous page": "Página anterior", "Next page": "Página siguiente",
+  "Failed to generate file for download": "No se pudo generar el archivo para la descarga.",
+  "Image source failed to load": "No se pudo cargar la imagen", "Number is above the allowed range.": "El número supera el rango permitido.",
+  "Number is below the allowed range.": "El número está por debajo del rango permitido.",
+  "Please enter a number.": "Ingresar un número.", "Please enter a valid number.": "Ingresar un número válido.",
+  "Step up": "Subir", "Step down": "Bajar", "Increment": "Subir", "Decrement": "Bajar", "Increase value": "Subir el valor", "Decrease value": "Bajar el valor",
+};
+const REGLAS_ES = [
   [/^(Error: )?Number is outside the allowed range\. Please enter a value between (\S+) and (\S+)\.$/, "$1El número está fuera del rango permitido. Ingresar un valor entre $2 y $3."],
-  [/^Failed to generate file for download$/, "No se pudo generar el archivo para la descarga."],
-  [/^Press Enter to apply$/, "Pulsar Enter para aplicar"],
-  [/^Press Ctrl\+Enter to apply$/, "Pulsar Ctrl+Enter para aplicar"],
-  [/^Press Cmd\+Enter to apply$/, "Pulsar Cmd+Enter para aplicar"],
-  [/^Please enter a (valid )?number\.?$/, "Ingresar un número válido."],
+  [/^(Error: )?Number is above the allowed range\. Please enter a value less than or equal to (\S+)\.$/, "$1El número supera el rango permitido. Ingresar un valor menor o igual a $2."],
+  [/^(Error: )?Number is below the allowed range\. Please enter a value greater than or equal to (\S+)\.$/, "$1El número está por debajo del rango permitido. Ingresar un valor mayor o igual a $2."],
+  [/^Error: Number is above the allowed range\.$/, "Error: El número supera el rango permitido."],
+  [/^Error: Number is below the allowed range\.$/, "Error: El número está por debajo del rango permitido."],
+  [/^Press (Enter|Ctrl\+Enter|⌘\+Enter|Cmd\+Enter) to apply$/, "Pulsar $1 para aplicar"],
+  [/^Press (Enter|Ctrl\+Enter|⌘\+Enter|Cmd\+Enter) to submit form$/, "Pulsar $1 para enviar"],
+  [/^1 option available\.?$/, "1 opción disponible."],
+  [/^(\d+) options available\.?$/, "$1 opciones disponibles."],
+  [/^Select (\d+) matches$/, "Seleccionar $1 coincidencias"],
+  [/^You can only select up to (\d+) options?\. Remove an option first\.$/, "Solo se pueden elegir hasta $1 opciones. Quitar una opción primero."],
+  [/^Help for (.+)$/, "Ayuda sobre $1"],
+  [/^Remove (.+)$/, "Quitar $1"],
+  [/^Upload (.+)$/, "Subir $1"],
+  [/^(\S+) per file$/, "$1 por archivo"],
+  [/^(.+) files? (?:are|is) not allowed\.$/, "No se permiten archivos $1."],
+  [/^(\S+) color picker$/, "Selector de color $1"],
+  [/^Page (\d+)$/, "Página $1"],
+  [/^File must be (\S+) or smaller\.?$/, "El archivo debe pesar $1 o menos."],
+  [/^File is larger than (\S+)\.?$/, "El archivo supera $1."],
+  [/^File is too large\. Maximum size is (.+)$/, "El archivo es demasiado grande. Tamaño máximo: $1."],
+  [/^(.+) is not a valid file type\.?$/, "$1 no es un tipo de archivo válido."],
 ];
+function traducirTexto(s) {
+  const t = s.trim();
+  if (t.length < 4 || t.length > 160) return null;
+  if (Object.prototype.hasOwnProperty.call(EXACTOS_ES, t)) return EXACTOS_ES[t];
+  for (const [er, es] of REGLAS_ES) if (er.test(t)) return t.replace(er, es);
+  return null;
+}
 function traducirNodo(raiz) {
+  if (!raiz || (raiz.nodeType !== 1 && raiz.nodeType !== 3)) return;
+  if (raiz.nodeType === 3) {
+    const r = traducirTexto(raiz.nodeValue);
+    if (r !== null && r !== raiz.nodeValue) raiz.nodeValue = r;
+    return;
+  }
   const it = doc.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
   for (let n = it.nextNode(); n; n = it.nextNode()) {
-    const txt = n.nodeValue.trim();
-    if (txt.length < 12 || txt.length > 140) continue;
-    for (const [er, es] of TRADUCCIONES_ES) {
-      if (er.test(txt)) { n.nodeValue = txt.replace(er, es); break; }
-    }
+    const r = traducirTexto(n.nodeValue);
+    if (r !== null && r !== n.nodeValue) n.nodeValue = r;
   }
+  const propio = raiz.matches && raiz.matches("[title],[aria-label],[placeholder]") ? [raiz] : [];
+  [...propio, ...raiz.querySelectorAll("[title],[aria-label],[placeholder]")].forEach(el => {
+    for (const a of ["title", "aria-label", "placeholder"]) {
+      const v = el.getAttribute(a);
+      if (!v) continue;
+      const r = traducirTexto(v);
+      if (r !== null && r !== v) el.setAttribute(a, r);
+    }
+  });
 }
-function traducirStreamlit() {   // el aviso del campo numérico cambia de texto sin agregar nodos: se revisa a intervalos
+function esEspanol() {
   const ancla = doc.getElementById("ancla-tema");
-  if (!ancla || ancla.dataset.lang !== "es") return;
-  doc.querySelectorAll("[data-testid='stNumberInputContainer'], [data-testid='stAlert'], [data-testid='stDownloadButton']").forEach(traducirNodo);
+  return !!ancla && ancla.dataset.lang === "es";
+}
+function traducirStreamlit() {   // barrido de toda la página: lo que Streamlit cambia sin agregar nodos
+  if (esEspanol()) traducirNodo(doc.body);
 }
 function accesibilidad() {
   // idioma del documento, texto alternativo de los mapas y nombre de los botones de restablecer
@@ -502,15 +570,19 @@ function sinDesplazamientoLateral() {
   const c = doc.querySelector("[data-testid='stSidebarContent']");
   if (c && c.scrollLeft) c.scrollLeft = 0;
 }
+let vueltas = 0;
 if (!doc.__tema) {
   doc.__tema = true;
   new MutationObserver((cambios) => {
-    const ancla = doc.getElementById("ancla-tema");
-    if (!ancla || ancla.dataset.lang !== "es") return;
-    cambios.forEach(c => c.addedNodes.forEach(n => traducirNodo(n.nodeType === 3 ? n.parentNode : n)));
-  }).observe(doc.body, { childList: true, subtree: true });
+    if (!esEspanol()) return;
+    cambios.forEach(c => {
+      if (c.type === "childList") c.addedNodes.forEach(traducirNodo);
+      else traducirNodo(c.target);
+    });
+  }).observe(doc.body, { childList: true, subtree: true, characterData: true, attributes: true,
+                         attributeFilter: ["title", "aria-label", "placeholder"] });
   setInterval(() => {
-    aplicarTema(); sinDesplazamientoLateral(); ponerTitulos(); accesibilidad(); traducirStreamlit();
+    aplicarTema(); sinDesplazamientoLateral(); ponerTitulos(); accesibilidad(); if (++vueltas % 5 === 0) traducirStreamlit();
     // color de las tarjetas según el tema (blanco en claro, gris azulado en oscuro)
     const tj = doc.querySelector(".st-key-tarjeta_mapa");
     if (tj) {   // borde derecho de la tarjeta: el panel de mapas guardados se alinea con él
