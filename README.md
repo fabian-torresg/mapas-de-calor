@@ -1,61 +1,50 @@
-# Mapas de calor
+# Mapas de calor (Colombia heat maps)
 
-[![Streamlit](https://img.shields.io/badge/Streamlit-App%20en%20l%C3%ADnea-FF4B4B?logo=streamlit&logoColor=white)](https://mapas-de-calor.streamlit.app/)
-[![Pruebas](https://github.com/fabian-torresg/mapas-de-calor/actions/workflows/pruebas.yml/badge.svg)](https://github.com/fabian-torresg/mapas-de-calor/actions/workflows/pruebas.yml)
+**English** | [Español](README.es.md)
+
+[![Streamlit](https://img.shields.io/badge/Streamlit-Live%20app-FF4B4B?logo=streamlit&logoColor=white)](https://mapas-de-calor.streamlit.app/)
+[![Tests](https://github.com/fabian-torresg/mapas-de-calor/actions/workflows/pruebas.yml/badge.svg)](https://github.com/fabian-torresg/mapas-de-calor/actions/workflows/pruebas.yml)
 [![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Tecnologías](https://img.shields.io/badge/Tecnolog%C3%ADas-Pandas%20%7C%20GeoPandas%20%7C%20Matplotlib-orange)](#estructura)
+[![Stack](https://img.shields.io/badge/Stack-Pandas%20%7C%20GeoPandas%20%7C%20Matplotlib-orange)](#for-developers)
 
-Aplicación en Python y Streamlit que genera mapas de calor (coropletas) de Colombia por departamento, municipio,
-región natural y localidad o comuna de 22 ciudades. Recibe datos escritos en la aplicación o cargados desde Excel o CSV,
-los asocia con la geografía y exporta el mapa listo para informes y presentaciones.
+A Python and Streamlit app that generates heat maps of Colombia by department, municipality, natural region, and
+locality or commune for 22 cities. It takes data typed into the app or loaded from Excel or CSV, matches it to the
+geography, and exports a map ready for reports and presentations.
 
-**Aplicación en línea:** <https://mapas-de-calor.streamlit.app/>
+**Live app:** <https://mapas-de-calor.streamlit.app/>
 
-**Presentación:** <https://fabian-torresg.github.io/mapas-de-calor/>
+**Website:** <https://fabian-torresg.github.io/mapas-de-calor/>
 
-## Funcionalidades
+## Features
 
-- **Área:** país, regiones, departamentos, municipios (1.123) y ciudades con división interna. Admite selección parcial
-  y encuadre ajustado.
-- **Datos:** tabla editable o carga de XLSX, XLS y CSV. Los nombres se normalizan (tildes, mayúsculas, alias) y los no
-  reconocidos reciben una sugerencia. Admite formatos numéricos colombianos e internacionales y agrega duplicados.
-- **Coloración:** escala continua (lineal, raíz, logarítmica o cuantiles) o categorías, con 15 paletas o colores
-  propios. Una columna opcional de segmentos permite agrupar, colorear y delimitar lugares.
-- **Diseño:** líneas por capa, lupa sobre lugares pequeños, minimapa, barra de escala, flecha del norte, etiquetas,
-  leyenda, resumen estadístico y diez plantillas.
-- **Exportación:** mapa en PNG, JPG, TIFF, SVG o PDF; datos en CSV, Excel, JSON, Parquet o GeoJSON. Los mapas
-  guardados se descargan en un ZIP.
-- **Idioma y tema:** español e inglés; modo claro y oscuro.
+- **Area:** country, regions, departments, municipalities (1,123) and cities with internal divisions. Supports partial
+  selection and tight framing.
+- **Data:** editable table or XLSX, XLS and CSV upload. Names are normalized (accents, capitalization, aliases) and
+  unrecognized ones get a suggestion. Handles Colombian and international number formats and aggregates duplicates.
+- **Coloring:** continuous scale (linear, square root, logarithmic or quantiles) or categories, with 15 palettes or
+  custom colors. An optional segment column lets you group, color and outline places.
+- **Design:** layered lines, magnifier for small places, minimap, scale bar, north arrow, labels, legend, statistical
+  summary and ten templates.
+- **Export:** map as PNG, JPG, TIFF, SVG or PDF; data as CSV, Excel, JSON, Parquet or GeoJSON. Saved maps download as
+  a ZIP.
+- **Language and theme:** Spanish and English; light and dark mode.
 
-## Ejemplos
+## Examples
 
-Mapas generados con la aplicación a partir de datos ficticios (`examples/datos_ejemplo.xlsx`).
+Maps generated with the app from fictitious data (`examples/datos_ejemplo.xlsx`).
 
 | | | |
 | --- | --- | --- |
-| ![Colombia por departamento](docs/img/departamentos.png) | ![Municipios de Cundinamarca y Boyacá](docs/img/municipios.png) | ![Localidades de Bogotá](docs/img/ciudad.png) |
-| Departamentos, con ranking | Municipios, con minimapa y sin leyenda | Localidades de Bogotá, con nombres |
-| ![Regiones naturales en inglés](docs/img/regiones.png) | ![Comunas de Medellín](docs/img/medellin.png) | ![Antioquia por municipios](docs/img/antioquia.png) |
-| Regiones, en inglés | Comunas de Medellín, con ampliación | Antioquia, con resumen estadístico |
+| ![Colombia by department](docs/img/departamentos.png) | ![Municipalities of Cundinamarca and Boyacá](docs/img/municipios.png) | ![Localities of Bogotá](docs/img/ciudad.png) |
+| Departments, with ranking | Municipalities, with minimap and no legend | Localities of Bogotá, with names |
+| ![Natural regions](docs/img/regiones.png) | ![Communes of Medellín](docs/img/medellin.png) | ![Antioquia by municipality](docs/img/antioquia.png) |
+| Natural regions, with name and value | Communes of Medellín, with magnifier | Antioquia, with statistical summary |
 
-## Instalación
+## Data format
 
-Requiere Python 3.12 o superior.
-
-```bash
-git clone https://github.com/fabian-torresg/mapas-de-calor.git
-cd mapas-de-calor
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-En la primera ejecución se descargan los límites municipales de GADM (aprox. 1 MB).
-
-## Formato de los datos
-
-Las columnas se reconocen por su encabezado. `Municipio` solo se requiere en mapas por municipio y `Segmento` es
-opcional.
+Columns are recognized by their header, which is in Spanish. `Municipio` is only required for municipality maps and
+`Segmento` is optional.
 
 | Departamento | Municipio | Valor | Segmento |
 | --- | --- | --- | --- |
@@ -64,9 +53,25 @@ opcional.
 | Nariño | Pasto | 45 % | Sur |
 | Meta | Villavicencio | $ 2.400.000 | Llanos |
 
-El archivo [`examples/datos_ejemplo.xlsx`](examples/datos_ejemplo.xlsx) contiene datos ficticios de prueba.
+The file [`examples/datos_ejemplo.xlsx`](examples/datos_ejemplo.xlsx) contains fictitious test data.
 
-## Uso como biblioteca
+## Run it on your machine
+
+You do not need to install anything to use the tool: it is available online. These steps are for running it locally or
+modifying it. Requires Python 3.12 or later.
+
+```bash
+git clone https://github.com/fabian-torresg/mapas-de-calor.git
+cd mapas-de-calor
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+On the first run, the GADM municipal boundaries are downloaded (about 1 MB).
+
+## For developers
+
+### Use as a library
 
 ```python
 import pandas as pd
@@ -74,47 +79,47 @@ import mapacalor as mc
 
 df = pd.read_excel("examples/datos_ejemplo.xlsx", sheet_name="Municipios")
 em = mc.emparejar(df, "Departamento", "Valor", col_muni="Municipio", nivel="municipio")
-fig, info = mc.dibujar(em.tabla, mc.Estilo(nivel="municipio", deptos=["Cundinamarca", "Boyacá"], titulo="Mi mapa"))
-fig.savefig("mi_mapa.png")
+fig, info = mc.dibujar(em.tabla, mc.Estilo(nivel="municipio", deptos=["Cundinamarca", "Boyacá"], titulo="My map"))
+fig.savefig("my_map.png")
 ```
 
-## Estructura
+### Structure
 
 ```text
-app.py          Flujo de la página y barra lateral
-ui/             Controles, estilos, textos y pestañas de la interfaz
-mapacalor/      Motor: geometrías, lectura y emparejamiento de datos, dibujo y paletas
-data/           Catálogo de municipios, geometrías propias y tipografía de la firma
-docs/           Página de presentación (GitHub Pages)
-examples/       Datos de ejemplo
-tests/          Pruebas con pytest
+app.py          Page flow and sidebar
+ui/             Controls, styles, texts and tabs of the interface
+mapacalor/      Engine: geometries, data reading and matching, drawing and palettes
+data/           Municipality catalog, own geometries and signature typeface
+docs/           Website (GitHub Pages)
+examples/       Sample data
+tests/          pytest tests
 ```
 
-Stack: Python, pandas, GeoPandas, Shapely, matplotlib y Streamlit.
+Stack: Python, pandas, GeoPandas, Shapely, matplotlib and Streamlit.
 
-## Pruebas y despliegue
+### Tests and deployment
 
 ```bash
 pip install pytest
 python -m pytest tests
 ```
 
-GitHub Actions ejecuta pyflakes, las pruebas en Python 3.12, 3.13 y 3.14, y un análisis de seguridad. La aplicación se
-despliega en Streamlit Community Cloud apuntando a `app.py`; `requirements.txt` define las dependencias y
-`packages.txt` las tipografías de sustitución en Linux.
+GitHub Actions runs pyflakes, the tests on Python 3.12, 3.13 and 3.14, and a security scan. The app is deployed on
+Streamlit Community Cloud pointing at `app.py`; `requirements.txt` defines the dependencies and `packages.txt` the
+substitute fonts on Linux.
 
-## Fuentes y licencias
+## Sources and licenses
 
-- **Municipios y departamentos:** [GADM 4.1](https://gadm.org), uso académico y no comercial. No se redistribuye: la
-  aplicación lo descarga del sitio oficial.
-- **Países vecinos:** [Natural Earth](https://www.naturalearthdata.com), dominio público.
-- **Localidades, comunas y cinco municipios posteriores a GADM:** © colaboradores de
-  [OpenStreetMap](https://www.openstreetmap.org/copyright), licencia ODbL.
-- **Tipografía Great Vibes:** SIL Open Font License 1.1 (`data/fonts/OFL.txt`).
-- **Código:** licencia MIT.
+- **Municipalities and departments:** [GADM 4.1](https://gadm.org), academic and non-commercial use. Not
+  redistributed: the app downloads it from the official site.
+- **Neighboring countries:** [Natural Earth](https://www.naturalearthdata.com), public domain.
+- **Localities, communes and five municipalities created after GADM:** © contributors to
+  [OpenStreetMap](https://www.openstreetmap.org/copyright), ODbL license.
+- **Great Vibes typeface:** SIL Open Font License 1.1 (`data/fonts/OFL.txt`).
+- **Code:** MIT license.
 
-Se usó Claude Code (Anthropic) como asistente de programación; el diseño, la revisión y la validación son del autor.
+Claude Code (Anthropic) was used as a programming assistant.
 
-## Autor
+## Author
 
 **Fabián Torres** · [LinkedIn](https://www.linkedin.com/in/fabian-torresg) · [GitHub](https://github.com/fabian-torresg)
