@@ -180,3 +180,29 @@ def test_tipografia_manuscrita_disponible_para_los_textos():
     assert TIPOGRAFIAS["Great Vibes"] == "firma" and "firma" in render.FUENTES
     assert any(f.name == "Great Vibes" for f in font_manager.fontManager.ttflist)
     assert dibuja(None, titulo="Título", tipo_titulo="firma", subtitulo="Sub", tipo_subtitulo="firma")["unidades"] > 0
+
+
+def test_dibujo_con_resumen_en_otro_hilo_como_la_descarga():
+    """La descarga de Streamlit dibuja en un hilo aparte: la figura debe traer su propio lienzo Agg."""
+    resultado = {}
+
+    def tarea():
+        try:
+            fig, _ = mc.dibujar(None, mc.Estilo(dpi=40, resumen=True, titulo="a\nb"))
+            resultado["png"] = mc.exportar(fig, "png")
+            plt.close(fig)
+        except Exception as ex:   # pragma: no cover - solo si vuelve el error
+            resultado["error"] = ex
+
+    hilo = threading.Thread(target=tarea)
+    hilo.start()
+    hilo.join()
+    assert "error" not in resultado and resultado["png"][:4] == b"\x89PNG"
+
+
+def test_titulo_y_nota_de_varias_lineas_ocupan_mas_alto_sin_encimarse():
+    una = mc.dibujar(None, mc.Estilo(dpi=40, titulo="A", subtitulo="B", fuente_nota="N"))[0]
+    varias = mc.dibujar(None, mc.Estilo(dpi=40, titulo="A\nA\n", subtitulo="B\nB\nB", fuente_nota="N\nN"))[0]
+    assert varias.get_figheight() > una.get_figheight()
+    assert next(t for t in varias.texts if t.get_text().startswith("A")).get_text() == "A\nA"   # sin saltos finales
+    plt.close(una), plt.close(varias)

@@ -19,6 +19,8 @@ matplotlib.use("Agg")
 import matplotlib.patheffects as pe  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib import font_manager  # noqa: E402
+from matplotlib.backends.backend_agg import FigureCanvasAgg  # noqa: E402
+from matplotlib.figure import Figure  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from matplotlib.colors import to_hex, to_rgb  # noqa: E402
@@ -557,11 +559,16 @@ def _limites(geoms, margen=0.05):
     return (minx - m, maxx + m), (miny - m, maxy + m)
 
 
+def _n_lineas(texto: str) -> int:
+    """Líneas visibles de un texto; los saltos al final no cuentan."""
+    return len(texto.rstrip("\n").split("\n"))
+
+
 def dibujar(tabla: pd.DataFrame | None, e: Estilo):
     """Devuelve (figura, info). Un valor infinito en la tabla cuenta como «sin dato»."""
     if tabla is not None and "valor" in tabla and not np.isfinite(tabla["valor"].astype(float).fillna(0)).all():
         tabla = tabla.assign(valor=tabla["valor"].astype(float).where(np.isfinite(tabla["valor"].astype(float))))
-    with plt.rc_context({"font.family": FUENTES.get(e.fuente, FUENTES["sans"])}):
+    with _CERROJO, plt.rc_context({"font.family": FUENTES.get(e.fuente, FUENTES["sans"])}):  # rcParams es global
         return _dibujar(tabla, e)
 
 
@@ -710,13 +717,15 @@ def _calcular_medidas(esc: _Escena) -> _Medidas:
     m.esp_ley, m.esp_ley_ext = _pulg(e.esp_leyenda), _pulg(e.esp_leyenda_extremos)
     m.esp_ley_ext_der = _pulg(e.esp_leyenda_extremos_der)
     m.tam_ley = _alto_leyenda(esc, m)
-    alto_tit = _pulg(e.titulo_tam) * 1.45 if e.titulo else 0
-    alto_sub = _pulg(e.subtitulo_tam) * 1.6 if e.subtitulo else 0
+    # cada salto de línea agrega una línea de texto (1,2 veces el tamaño) al alto del bloque
+    alto_tit = _pulg(e.titulo_tam) * (1.45 + 1.2 * (_n_lineas(e.titulo) - 1)) if e.titulo else 0
+    alto_sub = _pulg(e.subtitulo_tam) * (1.6 + 1.2 * (_n_lineas(e.subtitulo) - 1)) if e.subtitulo else 0
     m.sep_tit = _pulg(e.esp_titulo) if (e.titulo or e.subtitulo) else 0
     m.sep_sub = _pulg(e.esp_subtitulo) if (e.titulo and e.subtitulo) else 0
     m.alto_tit = alto_tit
     alto_bloque_tit = max(alto_tit + alto_sub + 0.12 + m.sep_tit + m.sep_sub, 0.05)
-    m.alto_nota = max(_pulg(e.nota_tam) * 2.4 + _pulg(e.esp_nota), _pulg(e.nota_tam)) if e.fuente_nota else 0
+    extra_nota = _pulg(e.nota_tam) * 1.2 * (_n_lineas(e.fuente_nota) - 1) if e.fuente_nota else 0
+    m.alto_nota = max(_pulg(e.nota_tam) * 2.4 + _pulg(e.esp_nota), _pulg(e.nota_tam)) + extra_nota if e.fuente_nota else 0
     m.res = calcular_resumen(p, e) if e.resumen else None
     if m.res and e.resumen_en_imagen:
         ancho_chars = int(m.ax_w * 72 / (e.tam_resumen * 0.5))      # caracteres que caben a ese tamaño
@@ -883,13 +892,13 @@ def _titulos(fig, esc: _Escena, m: _Medidas, subrayar: list):
     e, tx = esc.e, esc.tx
     yt = 1 - (0.12 + m.sep_tit) / m.fig_h
     if e.titulo:
-        t = fig.text(m.margen, yt, e.titulo, fontsize=e.titulo_tam, color=tx["titulo"], va="top",
+        t = fig.text(m.margen, yt, e.titulo.rstrip("\n"), fontsize=e.titulo_tam, color=tx["titulo"], va="top",
                      **_fuente(e.estilo_titulo, e.tipo_titulo))
         if "subrayado" in e.estilo_titulo:
             subrayar.append(t)
         yt -= (m.alto_tit + m.sep_sub) / m.fig_h
     if e.subtitulo:
-        t = fig.text(m.margen, yt, e.subtitulo, fontsize=e.subtitulo_tam, color=tx["sub"], va="top",
+        t = fig.text(m.margen, yt, e.subtitulo.rstrip("\n"), fontsize=e.subtitulo_tam, color=tx["sub"], va="top",
                      **_fuente(e.estilo_subtitulo, e.tipo_subtitulo))
         if "subrayado" in e.estilo_subtitulo:
             subrayar.append(t)
@@ -973,7 +982,7 @@ def _pie(fig, esc: _Escena, m: _Medidas, subrayar: list):
                                            fontsize=e.tam_resumen, color=e.color_resumen or tx["resumen"], va="top",
                                            estilo=e.estilo_resumen, tipo=e.tipo_resumen)
     if e.fuente_nota:
-        t = fig.text(m.margen, (m.pie + _pulg(e.nota_tam) * 0.7) / m.fig_h, e.fuente_nota, fontsize=e.nota_tam, color=tx["nota"],
+        t = fig.text(m.margen, (m.pie + _pulg(e.nota_tam) * 0.7) / m.fig_h, e.fuente_nota.rstrip("\n"), fontsize=e.nota_tam, color=tx["nota"],
                      **_fuente(e.estilo_nota, e.tipo_nota))
         if "subrayado" in e.estilo_nota:
             subrayar.append(t)
@@ -1016,7 +1025,9 @@ def _dibujar(tabla: pd.DataFrame | None, e: Estilo):
     esc = _preparar_escena(tabla, e)
     e, p, u = esc.e, esc.p, esc.u
     m = _calcular_medidas(esc)
-    fig = plt.figure(figsize=(m.fig_w, m.fig_h), dpi=e.dpi, facecolor=e.color_fondo)
+    # lienzo Agg explícito: la descarga corre en otro hilo y ahí pyplot puede dejar la figura sin renderizador
+    fig = Figure(figsize=(m.fig_w, m.fig_h), dpi=e.dpi, facecolor=e.color_fondo)
+    FigureCanvasAgg(fig)
     fig.canvas.draw_idle = lambda *a, **k: None  # solo se dibuja al guardar (cada .plot() redibujaría todo)
     ax = _crear_mapa(fig, esc, m)
     subrayar = _etiquetas(fig, ax, esc, m)
